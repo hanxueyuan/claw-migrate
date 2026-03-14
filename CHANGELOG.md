@@ -5,14 +5,7 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/)。
 
-## [Unreleased]
-
-### 计划功能
-- 支持批量迁移多个配置文件
-- 添加迁移进度显示
-- 支持增量同步模式
-
-## [2.0.0] - 2026-03-14
+## [2.0.0] - 2026-03-15
 
 ### 新增 ✨
 - 从 GitHub 私有仓库拉取 OpenClaw 配置
@@ -38,11 +31,6 @@
 - 实现方案说明（IMPLEMENTATION.md）
 - 使用示例（EXAMPLES.md）
 - 贡献指南（CONTRIBUTING.md）
-
-## [1.0.0] - 2026-03-13
-
-### 已移除
-- 旧版 SSH 同步功能（已废弃）
 
 ---
 
