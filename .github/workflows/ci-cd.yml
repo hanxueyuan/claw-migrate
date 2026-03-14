@@ -129,8 +129,8 @@ jobs:
         continue-on-error: true
 
   # 发布到 npm（仅标签触发）
-  release:
-    name: 🚀 Release
+  release-npm:
+    name: 🚀 Release to npm
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [test, build]
@@ -150,13 +150,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Run tests
-        run: npm test
-      
       - name: Publish to npm
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        continue-on-error: true  # npm 发布可选，不影响其他流程
+
+  # 创建 GitHub Release（仅标签触发）
+  release-github:
+    name: 📦 GitHub Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [test, build]
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -172,7 +182,7 @@ jobs:
     name: 📦 Deploy to OpenClaw
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [test, build]
+    needs: [test, build, release-github]
     if: startsWith(github.ref, 'refs/tags/v')
     
     steps:
