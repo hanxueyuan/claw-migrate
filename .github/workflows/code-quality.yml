@@ -1,0 +1,52 @@
+# 代码质量工作流
+# 在 Pull Request 时自动运行代码质量检查
+
+name: Code Quality
+
+on:
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  # 代码风格检查
+  code-style:
+    name: Code Style Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Check JavaScript syntax
+        run: node -c src/*.js
+      
+      - name: Verify test files
+        run: node -c tests/*.js
+
+  # 文档检查
+  docs-check:
+    name: Documentation Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Check required files exist
+        run: |
+          test -f README.md && echo "✓ README.md exists"
+          test -f SKILL.md && echo "✓ SKILL.md exists"
+          test -f package.json && echo "✓ package.json exists"
+      
+      - name: Validate package.json
+        run: node -e "JSON.parse(require('fs').readFileSync('package.json'))"
+        shell: bash
