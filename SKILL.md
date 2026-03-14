@@ -35,16 +35,16 @@
 
 ```bash
 # 从 GitHub 仓库拉取配置（自动检测本地状态）
-openclaw skill run MigrateKit --repo <owner>/<repo>
+openclaw skill run claw-migrate --repo <owner>/<repo>
 
 # 指定分支
-openclaw skill run MigrateKit --repo <owner>/<repo> --branch main
+openclaw skill run claw-migrate --repo <owner>/<repo> --branch main
 
 # 指定子目录路径（配置在 workspace/projects/workspace 下）
-openclaw skill run MigrateKit --repo <owner>/<repo> --path workspace/projects/workspace
+openclaw skill run claw-migrate --repo <owner>/<repo> --path workspace/projects/workspace
 
 # 预览变更（不实际写入）
-openclaw skill run MigrateKit --repo <owner>/<repo> --dry-run
+openclaw skill run claw-migrate --repo <owner>/<repo> --dry-run
 ```
 
 ### 参数说明
@@ -88,21 +88,21 @@ openclaw skill run MigrateKit --repo <owner>/<repo> --dry-run
 
 ```bash
 # 基本用法
-openclaw skill run MigrateKit --repo your-username/your-repo
+openclaw skill run claw-migrate --repo your-username/your-repo
 
 # 指定分支和路径
-openclaw skill run MigrateKit \
+openclaw skill run claw-migrate \
   --repo your-username/your-repo \
   --branch main \
   --path workspace/projects/workspace
 
 # 仅拉取技能
-openclaw skill run MigrateKit \
+openclaw skill run claw-migrate \
   --repo your-username/your-repo \
   --type skills
 
 # 预览模式
-openclaw skill run MigrateKit \
+openclaw skill run claw-migrate \
   --repo your-username/your-repo \
   --dry-run
 ```
@@ -111,16 +111,16 @@ openclaw skill run MigrateKit \
 
 ```bash
 # 仅配置文件
-openclaw skill run MigrateKit --repo your-username/your-repo --type config
+openclaw skill run claw-migrate --repo your-username/your-repo --type config
 
 # 仅记忆文件
-openclaw skill run MigrateKit --repo your-username/your-repo --type memory
+openclaw skill run claw-migrate --repo your-username/your-repo --type memory
 
 # 仅技能
-openclaw skill run MigrateKit --repo your-username/your-repo --type skills
+openclaw skill run claw-migrate --repo your-username/your-repo --type skills
 
 # 仅学习记录
-openclaw skill run MigrateKit --repo your-username/your-repo --type learnings
+openclaw skill run claw-migrate --repo your-username/your-repo --type learnings
 ```
 
 ## Notes
@@ -130,12 +130,12 @@ openclaw skill run MigrateKit --repo your-username/your-repo --type learnings
 1. **环境变量**（推荐）：
    ```bash
    export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
-   openclaw skill run MigrateKit --repo <owner>/<repo>
+   openclaw skill run claw-migrate --repo <owner>/<repo>
    ```
 
 2. **gh CLI**（如果已安装并登录）：
    ```bash
-   gh auth token | openclaw skill run MigrateKit --repo <owner>/<repo>
+   gh auth token | openclaw skill run claw-migrate --repo <owner>/<repo>
    ```
 
 3. **交互式输入**：
@@ -180,3 +180,13 @@ OpenClaw Team
 
 ## License
 MIT
+
+## Marketplace
+
+- **Skill Name**: `claw-migrate`
+- **Category**: Tools / Migration
+- **Tags**: github, migration, backup, sync, configuration
+- **Min OpenClaw Version**: 1.0.0
+- **Install Size**: ~50KB
+- **Dependencies**: None (pure Node.js built-in modules)
+- **Repository**: https://github.com/hanxueyuan/claw-migrate

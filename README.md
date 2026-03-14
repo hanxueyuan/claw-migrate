@@ -2,6 +2,25 @@
 
 从 GitHub 私有仓库拉取 OpenClaw 配置到本地，支持智能合并，保留本地已有配置。
 
+## ⚡ 快速开始
+
+### 1. 安装技能
+```bash
+openclaw skill install claw-migrate
+```
+
+### 2. 使用
+```bash
+# 设置 GitHub Token（可选，也可以交互式输入）
+export GITHUB_TOKEN=ghp_xxx
+
+# 迁移配置
+openclaw skill run claw-migrate --repo your-username/your-repo
+```
+
+### 3. 完成！
+配置已迁移到本地，可以开始使用了。
+
 ## 使用场景
 
 ### 场景 1：新安装的 OpenClaw
@@ -47,16 +66,16 @@ gh auth login
 
 ```bash
 # 基本用法
-openclaw skill run MigrateKit --repo your-username/your-repo
+openclaw skill run claw-migrate --repo your-username/your-repo
 
 # 指定分支和路径
-openclaw skill run MigrateKit \
+openclaw skill run claw-migrate \
   --repo your-username/your-repo \
   --branch main \
   --path workspace/projects/workspace
 
 # 预览模式（先看会变更什么）
-openclaw skill run MigrateKit \
+openclaw skill run claw-migrate \
   --repo your-username/your-repo \
   --dry-run
 ```
@@ -101,35 +120,35 @@ openclaw skill run MigrateKit \
 
 ```bash
 # 从仓库拉取所有配置
-openclaw skill run MigrateKit --repo your-username/your-repo
+openclaw skill run claw-migrate --repo your-username/your-repo
 ```
 
 ### 仅迁移技能
 
 ```bash
 # 只拉取技能文件
-openclaw skill run MigrateKit --repo your-username/your-repo --type skills
+openclaw skill run claw-migrate --repo your-username/your-repo --type skills
 ```
 
 ### 仅迁移配置
 
 ```bash
 # 只拉取配置文件（AGENTS.md, SOUL.md 等）
-openclaw skill run MigrateKit --repo your-username/your-repo --type config
+openclaw skill run claw-migrate --repo your-username/your-repo --type config
 ```
 
 ### 仅迁移记忆
 
 ```bash
 # 只拉取记忆文件
-openclaw skill run MigrateKit --repo your-username/your-repo --type memory
+openclaw skill run claw-migrate --repo your-username/your-repo --type memory
 ```
 
 ### 预览模式
 
 ```bash
 # 先看会变更什么文件
-openclaw skill run MigrateKit --repo your-username/your-repo --dry-run
+openclaw skill run claw-migrate --repo your-username/your-repo --dry-run
 ```
 
 输出示例：

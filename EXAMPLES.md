@@ -12,7 +12,7 @@
 export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
 
 # 2. 执行迁移
-openclaw skill run MigrateKit --repo your-username/your-repo --path workspace/projects/workspace
+openclaw skill run claw-migrate --repo your-username/your-repo --path workspace/projects/workspace
 
 # 3. 验证配置
 cat AGENTS.md
@@ -68,10 +68,10 @@ ls skills/
 
 ```bash
 # 1. 预览会恢复哪些文件
-openclaw skill run MigrateKit --repo your-username/your-repo --dry-run
+openclaw skill run claw-migrate --repo your-username/your-repo --dry-run
 
 # 2. 执行恢复
-openclaw skill run MigrateKit --repo your-username/your-repo
+openclaw skill run claw-migrate --repo your-username/your-repo
 
 # 3. 如果出现问题，从备份恢复
 cp .migrate-backup/<timestamp>/AGENTS.md ./AGENTS.md
@@ -88,7 +88,7 @@ cp .migrate-backup/<timestamp>/AGENTS.md ./AGENTS.md
 
 ```bash
 # 仅拉取技能文件
-openclaw skill run MigrateKit --repo your-username/your-repo --type skills
+openclaw skill run claw-migrate --repo your-username/your-repo --type skills
 
 # 输出示例：
 #    ⏭️  AGENTS.md (本地已有，跳过)
@@ -116,7 +116,7 @@ git push
 # 在公司的服务器上
 # 2. 拉取最新配置
 export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
-openclaw skill run MigrateKit --repo your-username/your-repo --type config --type skills
+openclaw skill run claw-migrate --repo your-username/your-repo --type config --type skills
 ```
 
 ---
@@ -129,7 +129,7 @@ openclaw skill run MigrateKit --repo your-username/your-repo --type config --typ
 ### 步骤
 
 ```bash
-openclaw skill run MigrateKit --repo your-username/your-repo --dry-run
+openclaw skill run claw-migrate --repo your-username/your-repo --dry-run
 ```
 
 ### 预期输出
@@ -162,7 +162,7 @@ openclaw skill run MigrateKit --repo your-username/your-repo --dry-run
 gh auth status
 
 # 执行迁移（自动从 gh CLI 获取 Token）
-openclaw skill run MigrateKit --repo your-username/your-repo
+openclaw skill run claw-migrate --repo your-username/your-repo
 ```
 
 ---
@@ -176,7 +176,7 @@ openclaw skill run MigrateKit --repo your-username/your-repo
 
 ```bash
 # 直接运行，会提示输入 Token
-openclaw skill run MigrateKit --repo your-username/your-repo
+openclaw skill run claw-migrate --repo your-username/your-repo
 
 # 输出：
 # ⚠️  未检测到 GITHUB_TOKEN 环境变量
@@ -214,14 +214,14 @@ cp .migrate-backup/2024-01-15T10-30-00-000Z/AGENTS.md ./AGENTS.md
 
 A: 
 ```bash
-openclaw skill run MigrateKit --repo your-username/your-repo --no-backup
+openclaw skill run claw-migrate --repo your-username/your-repo --no-backup
 ```
 
 ### Q: 如何查看详细日志？
 
 A: 
 ```bash
-openclaw skill run MigrateKit --repo your-username/your-repo --verbose
+openclaw skill run claw-migrate --repo your-username/your-repo --verbose
 ```
 
 ---
