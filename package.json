@@ -1,0 +1,33 @@
+{
+  "name": "claw-migrate",
+  "version": "2.0.0",
+  "description": "OpenClaw GitHub 配置迁移工具 - 从 GitHub 私有仓库拉取配置到本地",
+  "main": "src/index.js",
+  "bin": {
+    "migratekit": "./src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node tests/merger.test.js",
+    "lint": "node -c src/*.js && echo '✓ JavaScript syntax OK'",
+    "build": "echo 'No build step required (pure JS)'",
+    "clean": "rm -rf node_modules/ *.log"
+  },
+  "keywords": [
+    "openclaw",
+    "migration",
+    "github",
+    "configuration",
+    "sync"
+  ],
+  "author": "OpenClaw Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openclaw/skills.git",
+    "directory": "claw-migrate"
+  }
+}
