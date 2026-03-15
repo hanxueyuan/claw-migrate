@@ -48,6 +48,8 @@ metadata:
 | MEMORY.md, memory/ | 合并（远端新增的添加） |
 | .learnings/ | 追加去重 |
 | .env | 本地没有则复制，有则保留本地 |
+| **feishu/*.json** | **本地没有则复制，有则跳过（飞书 channel 配置）** |
+| **其他 channel 配置** | **本地没有则复制，有则跳过** |
 
 ## 命令参数
 

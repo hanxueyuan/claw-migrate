@@ -45,6 +45,18 @@ const FILE_CATEGORIES = {
     '.env.example'
   ],
   
+  // Channel 配置（飞书等）
+  CHANNEL_CONFIG: [
+    'feishu/*.json',
+    'feishu/**/*.json',
+    'telegram/*.json',
+    'telegram/**/*.json',
+    'discord/*.json',
+    'discord/**/*.json',
+    '*.yaml',
+    '*.yml'
+  ],
+  
   // 模板文件
   TEMPLATES: [
     'templates/*'
@@ -66,11 +78,12 @@ const FILE_CATEGORIES = {
 
 // 迁移类型与文件类别的映射
 const CATEGORY_TYPE_MAP = {
-  config: ['CORE_CONFIG', 'ENV', 'OTHER_CONFIG', 'TEMPLATES', 'SCRIPTS'],
+  config: ['CORE_CONFIG', 'ENV', 'OTHER_CONFIG', 'TEMPLATES', 'SCRIPTS', 'CHANNEL_CONFIG'],
   skills: ['SKILLS'],
   memory: ['MEMORY'],
   learnings: ['LEARNINGS'],
-  all: ['CORE_CONFIG', 'SKILLS', 'MEMORY', 'LEARNINGS', 'ENV', 'TEMPLATES', 'SCRIPTS', 'OTHER_CONFIG']
+  channel: ['CHANNEL_CONFIG'],
+  all: ['CORE_CONFIG', 'SKILLS', 'MEMORY', 'LEARNINGS', 'ENV', 'CHANNEL_CONFIG', 'TEMPLATES', 'SCRIPTS', 'OTHER_CONFIG']
 };
 
 // 合并策略配置
