@@ -1,5 +1,5 @@
 # ClawHub 发布排除文件
-# 类似 .npmignore，用于 clawhub publish/sync 时排除
+# 用于 clawhub publish/sync 时排除不必要的开发文件
 
 # Git 相关
 .git/
@@ -8,7 +8,7 @@
 # 开发工作流
 .github/
 
-# 内部文档（开发过程文件）
+# 内部文档（开发过程文件，用户不需要）
 IMPLEMENTATION.md
 IMPROVEMENT_SUGGESTIONS.md
 RELEASE_CHECKLIST.md
