@@ -75,9 +75,9 @@ OpenClaw GitHub 配置迁移工具
   --help, -h             显示帮助信息
 
 示例:
-  openclaw skill run MigrateKit --repo <owner>/<repo>
-  openclaw skill run MigrateKit --repo <owner>/<repo> --branch main --path workspace/projects/workspace
-  openclaw skill run MigrateKit --repo <owner>/<repo> --type skills --dry-run
+  openclaw skill run claw-migrate --repo <owner>/<repo>
+  openclaw skill run claw-migrate --repo <owner>/<repo> --branch main --path workspace/projects/workspace
+  openclaw skill run claw-migrate --repo <owner>/<repo> --type skills --dry-run
 `);
 }
 
@@ -110,7 +110,7 @@ async function main() {
   // 验证必填参数
   if (!options.repo) {
     printError('❌ 错误：必须指定 --repo 参数');
-    console.log('用法：openclaw skill run MigrateKit --repo <owner/repo>');
+    console.log('用法：openclaw skill run claw-migrate --repo <owner/repo>');
     console.log('使用 --help 查看帮助信息');
     process.exit(1);
   }

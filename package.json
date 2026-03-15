@@ -1,6 +1,6 @@
 {
   "name": "claw-migrate",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "OpenClaw GitHub 配置迁移工具 - 从 GitHub 私有仓库拉取配置到本地",
   "main": "src/index.js",
   "bin": {

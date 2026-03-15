@@ -7,7 +7,7 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                      用户命令                                │
-│   openclaw skill run MigrateKit --repo <owner>/<repo>      │
+│   openclaw skill run claw-migrate --repo <owner>/<repo>      │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
