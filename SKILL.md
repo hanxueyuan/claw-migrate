@@ -1,6 +1,9 @@
 ---
 name: claw-migrate
 description: OpenClaw 配置迁移工具。当用户提到从 GitHub 拉取配置、迁移 OpenClaw 配置、同步配置、恢复配置、克隆配置到新机器时使用。支持从 GitHub 私有仓库拉取团队配置、技能、记忆等，智能合并不覆盖本地配置。
+homepage: https://github.com/hanxueyuan/claw-migrate
+metadata:
+  {"openclaw":{"emoji":"🔄","requires":{"bins":["node"],"env":["GITHUB_TOKEN"]},"primaryEnv":"GITHUB_TOKEN"}}
 ---
 
 # claw-migrate - OpenClaw 配置迁移工具

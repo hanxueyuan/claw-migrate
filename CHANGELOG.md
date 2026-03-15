@@ -5,6 +5,18 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/)。
 
+## [2.0.1] - 2026-03-15
+
+### 修复 🐛
+- 统一技能名称：将帮助文本中的 `MigrateKit` 改为 `claw-migrate`
+- 添加 `claw-migrate` 作为 bin 别名
+
+### 改进 🔧
+- SKILL.md 添加 `metadata.openclaw` 配置（emoji、requires、primaryEnv）
+- SKILL.md 添加 `homepage` 链接到 GitHub 仓库
+
+---
+
 ## [2.0.0] - 2026-03-15
 
 ### 新增 ✨

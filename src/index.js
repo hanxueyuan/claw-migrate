@@ -61,7 +61,7 @@ function printHelp() {
 OpenClaw GitHub 配置迁移工具
 
 用法:
-  openclaw skill run MigrateKit --repo <owner/repo> [选项]
+  openclaw skill run claw-migrate --repo <owner/repo> [选项]
 
 选项:
   --repo, -r <repo>      GitHub 仓库（必填，格式：owner/repo）

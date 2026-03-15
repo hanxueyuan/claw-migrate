@@ -8,6 +8,8 @@
 - [x] ✅ 文档完整
 - [x] ✅ 技能名称统一
 - [x] ✅ CI/CD 配置完成
+- [x] ✅ SKILL.md 添加 metadata 配置
+- [x] ✅ 添加 homepage 链接
 
 ## 发布流程
 
@@ -16,7 +18,7 @@
 编辑 `package.json`:
 ```json
 {
-  "version": "2.0.0"  // 发布版本号
+  "version": "2.0.1"  // 发布版本号
 }
 ```
 
@@ -28,10 +30,10 @@
 
 ```bash
 git add .
-git commit -m "chore: Prepare release v2.0.0"
-git tag -a v2.0.0 -m "Release v2.0.0 - Initial public release"
+git commit -m "chore: Prepare release v2.0.1"
+git tag -a v2.0.1 -m "Release v2.0.1 - ClawHub compliance fixes"
 git push origin main
-git push origin v2.0.0
+git push origin v2.0.1
 ```
 
 ### 4. 验证 CI/CD
@@ -45,20 +47,29 @@ git push origin v2.0.0
 - ✅ Build
 - 🚀 Release (自动触发)
 
-### 5. 发布到 OpenClaw 技能市场
+### 5. 发布到 ClawHub
 
 ```bash
-openclaw skill publish claw-migrate
+# 登录
+clawhub login
+
+# 发布
+clawhub publish /workspace/projects/workspace/skills/claw-migrate \
+  --slug claw-migrate \
+  --name "claw-migrate" \
+  --version 2.0.1 \
+  --changelog "Fix ClawHub compliance: add metadata, unify skill name" \
+  --tags latest
 ```
 
 ## 发布后验证
 
-- [ ] 技能市场可见
+- [ ] ClawHub 可见
 - [ ] 安装测试通过
 - [ ] 基本功能测试通过
 
 ---
 
-**发布版本**: v2.0.0
+**发布版本**: v2.0.1
 **发布日期**: 2026-03-15
 **发布经理**: OpenClaw Team
