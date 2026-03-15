@@ -95,7 +95,44 @@ const MERGE_STRATEGIES = {
   MERGE: ['MEMORY', 'LEARNINGS'],
   
   // 跳过模式：本地已有则跳过
-  SKIP: ['SKILLS', 'ENV']
+  SKIP: ['SKILLS', 'ENV', 'CHANNEL_CONFIG'],  // Channel 配置保留本地
+  
+  // 字段级合并：openclaw.json 特殊处理
+  FIELD_MERGE: ['openclaw.json']
+};
+
+// 机器特定文件（不迁移）
+const MACHINE_SPECIFIC_FILES = [
+  'feishu/dedup/*.json',      // 消息去重 ID
+  'feishu/pairing/*.json',    // Feishu pairing
+  'telegram/sessions/*.json', // Telegram 会话
+  'discord/pairing/*.json',   // Discord pairing
+  '.env',                      // 环境变量
+  '*.log',                     // 日志
+  'sessions/*.jsonl',          // 会话数据
+  '.git/config'                // git 配置
+];
+
+// openclaw.json 字段分类
+const OPENCLAW_JSON_FIELDS = {
+  // 可以覆盖的字段（通用配置）
+  overwrite: [
+    'models',
+    'skills',
+    'gateway',
+    'agents.defaults',
+    'browser.headless',
+    'browser.noSandbox'
+  ],
+  
+  // 保留本地的字段（机器特定）
+  keepLocal: [
+    'browser.executablePath',
+    'browser.defaultProfile',
+    'channel.*.pairing',
+    'channel.*.auth',
+    'channel.*.sessionId'
+  ]
 };
 
 // 迁移配置
@@ -120,5 +157,7 @@ module.exports = {
   FILE_CATEGORIES,
   CATEGORY_TYPE_MAP,
   MERGE_STRATEGIES,
-  MIGRATION_CONFIG
+  MIGRATION_CONFIG,
+  MACHINE_SPECIFIC_FILES,
+  OPENCLAW_JSON_FIELDS
 };

@@ -40,16 +40,30 @@ metadata:
 
 ## 文件迁移策略
 
-| 文件类型 | 策略 |
-|---------|------|
-| AGENTS.md, SOUL.md, IDENTITY.md, USER.md | 本地没有则复制，有则跳过 |
-| TOOLS.md, HEARTBEAT.md | 本地没有则复制，有则跳过 |
-| skills/ | 复制远端有而本地没有的技能 |
-| MEMORY.md, memory/ | 合并（远端新增的添加） |
-| .learnings/ | 追加去重 |
-| .env | 本地没有则复制，有则保留本地 |
-| **feishu/*.json** | **本地没有则复制，有则跳过（飞书 channel 配置）** |
-| **其他 channel 配置** | **本地没有则复制，有则跳过** |
+### 配置分类
+
+| 配置类型 | 文件示例 | 迁移策略 |
+|---------|---------|---------|
+| **通用配置** | AGENTS.md, SOUL.md, USER.md | 智能合并 |
+| **技能** | skills/**/SKILL.md | 增量同步（仅添加缺失） |
+| **记忆/学习** | MEMORY.md, .learnings/*.md | 合并/追加 |
+| **Channel 配置** | feishu/*.json | 保留本地（机器特定） |
+| **Pairing 信息** | feishu/pairing/*.json | ❌ 不迁移（机器特定） |
+| **敏感信息** | .env, sessions/*.jsonl | ❌ 不迁移 |
+
+### 详细说明
+
+| 文件类型 | 策略 | 说明 |
+|---------|------|------|
+| AGENTS.md, SOUL.md, IDENTITY.md, USER.md | 智能合并 | 保留本地定制 |
+| TOOLS.md, HEARTBEAT.md | 智能合并 | 保留本地定制 |
+| skills/ | 增量同步 | 仅添加远端有而本地没有的技能 |
+| MEMORY.md, memory/ | 合并 | 保留本地，追加远端新增 |
+| .learnings/ | 追加去重 | 追加远端新增 |
+| .env | ❌ 不迁移 | 保留本地（API keys 等） |
+| **feishu/dedup/*.json** | ❌ 不迁移 | 消息去重 ID（机器特定） |
+| **feishu/pairing/*.json** | ❌ 不迁移 | Pairing 信息（机器特定） |
+| openclaw.json | 字段级合并 | 保留 browser.executablePath 等机器特定字段 |
 
 ## 命令参数
 
