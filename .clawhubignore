@@ -1,0 +1,47 @@
+# ClawHub 发布排除文件
+# 类似 .npmignore，用于 clawhub publish/sync 时排除
+
+# Git 相关
+.git/
+.gitignore
+
+# 开发工作流
+.github/
+
+# 内部文档（开发过程文件）
+IMPLEMENTATION.md
+IMPROVEMENT_SUGGESTIONS.md
+RELEASE_CHECKLIST.md
+
+# 测试相关
+tests/
+coverage/
+.nyc_output/
+
+# 依赖
+node_modules/
+
+# 锁文件（无外部依赖，不需要）
+package-lock.json
+
+# 日志
+*.log
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 备份和临时文件
+*.bak
+*.backup
+.migrate-backup/
+tmp/
+temp/
+*.tmp
