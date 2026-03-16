@@ -1,89 +1,89 @@
 # Contributing to claw-migrate
 
-欢迎为 claw-migrate 项目贡献代码！
+Welcome to contribute to the claw-migrate project!
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 开发环境设置
+### Development Environment Setup
 
 ```bash
-# 克隆仓库
+# Clone repository
 git clone https://github.com/hanxueyuan/claw-migrate.git
 cd claw-migrate
 
-# 安装依赖
+# Install dependencies
 npm install
 
-# 运行测试
+# Run tests
 npm test
 
-# 运行代码检查
+# Run code linting
 npm run lint
 ```
 
-## 📝 提交规范
+## 📝 Commit Conventions
 
-我们使用 [Conventional Commits](https://www.conventionalcommits.org/) 规范：
+We use [Conventional Commits](https://www.conventionalcommits.org/) specification:
 
-- `feat:` 新功能
-- `fix:` Bug 修复
-- `docs:` 文档更新
-- `style:` 代码格式调整
-- `refactor:` 代码重构
-- `test:` 测试相关
-- `chore:` 构建/工具配置
+- `feat:` New feature
+- `fix:` Bug fix
+- `docs:` Documentation update
+- `style:` Code style adjustment
+- `refactor:` Code refactoring
+- `test:` Test related
+- `chore:` Build/tool configuration
 
-### 示例
+### Examples
 
 ```bash
-git commit -m "feat: 添加批量迁移支持"
-git commit -m "fix: 修复 GitHub API 认证问题"
-git commit -m "docs: 更新 README 使用示例"
+git commit -m "feat: add batch migration support"
+git commit -m "fix: fix GitHub API authentication issue"
+git commit -m "docs: update README usage examples"
 ```
 
-## 🧪 测试要求
+## 🧪 Testing Requirements
 
-所有 PR 必须：
-- ✅ 通过所有现有测试
-- ✅ 为新功能添加测试用例
-- ✅ 代码覆盖率不降低
+All PRs must:
+- ✅ Pass all existing tests
+- ✅ Add test cases for new features
+- ✅ Not reduce code coverage
 
-### 运行测试
+### Run Tests
 
 ```bash
-# 运行所有测试
+# Run all tests
 npm test
 
-# 运行单个测试文件
+# Run single test file
 node tests/merger.test.js
 ```
 
-## 📋 代码审查清单
+## 📋 Code Review Checklist
 
-提交 PR 前请确认：
+Please confirm before submitting PR:
 
-- [ ] 代码通过 lint 检查
-- [ ] 所有测试通过
-- [ ] 添加了必要的文档
-- [ ] 更新了 CHANGELOG.md（如适用）
-- [ ] 遵循了代码风格指南
+- [ ] Code passes lint check
+- [ ] All tests pass
+- [ ] Added necessary documentation
+- [ ] Updated CHANGELOG.md (if applicable)
+- [ ] Followed code style guidelines
 
-## 🔧 开发流程
+## 🔧 Development Flow
 
-1. Fork 仓库
-2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
-3. 提交更改 (`git commit -m 'feat: add amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 创建 Pull Request
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Create Pull Request
 
-## 📄 许可证
+## 📄 License
 
-MIT License - 详见 [LICENSE](LICENSE) 文件
+MIT License - See [LICENSE](LICENSE) file
 
-## 💬 问题反馈
+## 💬 Issue Feedback
 
-遇到问题？请创建 [Issue](https://github.com/hanxueyuan/claw-migrate/issues)
+Encountering problems? Please create an [Issue](https://github.com/hanxueyuan/claw-migrate/issues)
 
 ---
 
-感谢你的贡献！🎉
+Thank you for your contribution! 🎉

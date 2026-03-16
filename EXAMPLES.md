@@ -1,42 +1,42 @@
-# claw-migrate 使用示例
+# claw-migrate Usage Examples
 
-## 场景 1：新安装的 OpenClaw
+## Scenario 1: Newly Installed OpenClaw
 
-### 情况
-你刚在一台新服务器上安装了 OpenClaw，想从 GitHub 私有仓库拉取配置。
+### Situation
+You just installed OpenClaw on a new server and want to pull configuration from GitHub private repository.
 
-### 步骤
+### Steps
 
 ```bash
-# 1. 设置 GitHub Token
+# 1. Set GitHub Token
 export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
 
-# 2. 执行迁移
+# 2. Execute migration
 openclaw skill run claw-migrate --repo your-username/your-repo --path workspace/projects/workspace
 
-# 3. 验证配置
+# 3. Verify configuration
 cat AGENTS.md
 cat SOUL.md
 ls skills/
 ```
 
-### 预期输出
+### Expected Output
 ```
 ============================================================
-  OpenClaw GitHub 配置迁移工具
+  OpenClaw GitHub Configuration Migration Tool
 ============================================================
 
-📡 正在连接 GitHub...
-✅ 已连接到仓库：your-username/your-repo
-   类型：私有仓库
+📡 Connecting to GitHub...
+✅ Connected to repository: your-username/your-repo
+   Type: Private repository
 
-📋 正在分析文件...
-   发现 25 个文件待迁移
+📋 Analyzing files...
+   Found 25 files pending migration
 
-💾 正在创建备份...
-✅ 备份已创建：.migrate-backup/2024-01-15T10-30-00-000Z
+💾 Creating backup...
+✅ Backup created: .migrate-backup/2024-01-15T10-30-00-000Z
 
-🚀 开始迁移...
+🚀 Starting migration...
 
    ✓ AGENTS.md
    ✓ SOUL.md
@@ -47,94 +47,94 @@ ls skills/
    ...
 
 ==================================================
-✅ 迁移完成!
-   成功：25 个文件
-   跳过：0 个文件
+✅ Migration complete!
+   Success: 25 files
+   Skipped: 0 files
 
-📌 后续步骤:
-   • 检查配置是否正确，如有问题可从备份恢复
-   • 验证 AGENTS.md, SOUL.md 等配置文件
-   • 检查新技能是否正常工作
+📌 Next steps:
+   • Check if configuration is correct, can restore from backup if issues
+   • Verify configuration files like AGENTS.md, SOUL.md
+   • Check if new skills work correctly
 ```
 
 ---
 
-## 场景 2：配置恢复
+## Scenario 2: Configuration Restore
 
-### 情况
-本地配置文件损坏或误删，需要从 GitHub 仓库恢复。
+### Situation
+Local configuration files are corrupted or accidentally deleted, need to restore from GitHub repository.
 
-### 步骤
+### Steps
 
 ```bash
-# 1. 预览会恢复哪些文件
+# 1. Preview which files will be restored
 openclaw skill run claw-migrate --repo your-username/your-repo --dry-run
 
-# 2. 执行恢复
+# 2. Execute restore
 openclaw skill run claw-migrate --repo your-username/your-repo
 
-# 3. 如果出现问题，从备份恢复
+# 3. If issues occur, restore from backup
 cp .migrate-backup/<timestamp>/AGENTS.md ./AGENTS.md
 ```
 
 ---
 
-## 场景 3：仅更新技能
+## Scenario 3: Update Skills Only
 
-### 情况
-你想从仓库获取最新的技能，但不想覆盖本地配置。
+### Situation
+You want to get the latest skills from repository, but don't want to overwrite local configuration.
 
-### 步骤
+### Steps
 
 ```bash
-# 仅拉取技能文件
+# Pull skill files only
 openclaw skill run claw-migrate --repo your-username/your-repo --type skills
 
-# 输出示例：
-#    ⏭️  AGENTS.md (本地已有，跳过)
+# Example output:
+#    ⏭️  AGENTS.md (Already exists locally, skip)
 #    ✓ skills/new-skill/SKILL.md
-#    ⏭️  skills/weather/SKILL.md (本地已有，跳过)
+#    ⏭️  skills/weather/SKILL.md (Already exists locally, skip)
 ```
 
 ---
 
-## 场景 4：多设备同步
+## Scenario 4: Multi-Device Sync
 
-### 情况
-你在公司和家里各有一台 OpenClaw，希望保持配置同步。
+### Situation
+You have OpenClaw at both office and home, want to keep configuration synchronized.
 
-### 步骤
+### Steps
 
 ```bash
-# 在家里的服务器上（中央仓库）
-# 1. 确保配置已提交到 GitHub
+# On home server (central repository)
+# 1. Ensure configuration is committed to GitHub
 cd /workspace/projects/workspace
 git add .
 git commit -m "Update configuration"
 git push
 
-# 在公司的服务器上
-# 2. 拉取最新配置
+# On office server
+# 2. Pull latest configuration
 export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
 openclaw skill run claw-migrate --repo your-username/your-repo --type config --type skills
 ```
 
 ---
 
-## 场景 5：预览模式
+## Scenario 5: Preview Mode
 
-### 情况
-在执行实际迁移前，想先看会变更哪些文件。
+### Situation
+Before executing actual migration, want to see which files will be changed first.
 
-### 步骤
+### Steps
 
 ```bash
 openclaw skill run claw-migrate --repo your-username/your-repo --dry-run
 ```
 
-### 预期输出
+### Expected Output
 ```
-📝 预览将迁移的文件:
+📝 Preview files to be migrated:
 
    + AGENTS.md
    + SOUL.md
@@ -145,79 +145,79 @@ openclaw skill run claw-migrate --repo your-username/your-repo --dry-run
    + memory/2024-01-15-daily-review.md
    + .learnings/LEARNINGS.md
 
-💡 使用 --dry-run 以外的参数执行实际迁移
+💡 Use parameters other than --dry-run to execute actual migration
 ```
 
 ---
 
-## 场景 6：使用 gh CLI 认证
+## Scenario 6: Using gh CLI Authentication
 
-### 情况
-你已经安装了 GitHub CLI 并登录，想直接使用它进行认证。
+### Situation
+You have already installed GitHub CLI and logged in, want to use it directly for authentication.
 
-### 步骤
+### Steps
 
 ```bash
-# 确保已登录
+# Ensure logged in
 gh auth status
 
-# 执行迁移（自动从 gh CLI 获取 Token）
+# Execute migration (automatically get Token from gh CLI)
 openclaw skill run claw-migrate --repo your-username/your-repo
 ```
 
 ---
 
-## 场景 7：交互式输入 Token
+## Scenario 7: Interactive Token Input
 
-### 情况
-没有设置环境变量，也没有 gh CLI，想临时输入 Token。
+### Situation
+No environment variable set, no gh CLI, want to temporarily input Token.
 
-### 步骤
+### Steps
 
 ```bash
-# 直接运行，会提示输入 Token
+# Run directly, will prompt for Token input
 openclaw skill run claw-migrate --repo your-username/your-repo
 
-# 输出：
-# ⚠️  未检测到 GITHUB_TOKEN 环境变量
-#    请输入您的 GitHub Personal Access Token:
-#    （Token 仅用于本次会话，不会被保存）
+# Output:
+# ⚠️  GITHUB_TOKEN environment variable not detected
+#    Please enter your GitHub Personal Access Token:
+#    (Token only used for this session, will not be saved)
 # 
-# GitHub Token: [输入 Token]
+# GitHub Token: [Enter Token]
 ```
 
 ---
 
-## 常见问题
+## Common Questions
 
-### Q: 如何知道迁移是否成功？
+### Q: How do I know if migration was successful?
 
-A: 查看输出中的统计信息：
+A: Check the statistics in output:
 ```
-✅ 迁移完成!
-   成功：25 个文件
-   跳过：0 个文件
+✅ Migration complete!
+   Success: 25 files
+   Skipped: 0 files
 ```
 
-### Q: 迁移后如何恢复备份？
+### Q: How to restore backup after migration?
 
 A: 
 ```bash
-# 列出备份
+# List backups
 ls .migrate-backup/
 
-# 恢复特定文件
+# Restore specific file
 cp .migrate-backup/2024-01-15T10-30-00-000Z/AGENTS.md ./AGENTS.md
 ```
 
-### Q: 如何跳过备份？
+### Q: How to skip backup?
 
 A: 
 ```bash
 openclaw skill run claw-migrate --repo your-username/your-repo --no-backup
 ```
 
-### Q: 如何查看详细日志？
+### Q: How to view detailed logs?
 
 A: 
 ```bash
@@ -226,10 +226,10 @@ openclaw skill run claw-migrate --repo your-username/your-repo --verbose
 
 ---
 
-## 最佳实践
+## Best Practices
 
-1. **首次迁移前先用 --dry-run 预览**
-2. **保留备份**（默认启用，不要用 --no-backup）
-3. **定期更新 GitHub 仓库**，保持配置最新
-4. **使用私有仓库**，避免敏感信息泄露
-5. **定期轮换 Token**，建议每 90 天更新一次
+1. **Use --dry-run to preview before first migration**
+2. **Keep backups** (enabled by default, don't use --no-backup)
+3. **Regularly update GitHub repository**, keep configuration current
+4. **Use private repository**, avoid sensitive information leakage
+5. **Regularly rotate tokens**, recommended to update every 90 days

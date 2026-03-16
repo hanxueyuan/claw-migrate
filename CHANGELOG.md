@@ -1,75 +1,175 @@
 # Changelog
 
-所有重要的项目变更都将记录在此文件中。
+All important project changes will be recorded in this file.
 
-格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
-版本号遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/)。
+Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+version numbers follow [Semantic Versioning](https://semver.org/).
+
+## [2.2.0] - 2026-03-15
+
+### Added ✨
+- config-manager.js Configuration Management Module
+  - View configuration (`config`)
+  - Modify configuration (`config --edit`)
+  - Reset configuration (`config --reset`)
+  - Display status (`status`)
+  - Calculate next backup time
+- scheduler.js Scheduled Task Scheduler
+  - Start scheduled task (`scheduler --start`)
+  - Stop scheduled task (`scheduler --stop`)
+  - View logs (`scheduler --logs`)
+  - Supports daily/weekly/monthly automatic backup
+  - Automatically set system cron
+  - Logging functionality
+- Complete unit test suite
+  - merger.test.js - Merger engine tests (21 cases)
+  - setup.test.js - Configuration wizard tests (8 cases)
+  - backup.test.js - Backup module tests (10 cases)
+  - restore.test.js - Restore module tests (9 cases)
+  - config-manager.test.js - Configuration management tests (11 cases)
+  - scheduler.test.js - Scheduler tests (13 cases)
+  - integration.test.js - Integration tests (14 cases)
+  - Total: 86 test cases, 100% pass rate
+
+### Improved 🔧
+- index.js Command Processing
+  - Integrated configuration management functionality
+  - Integrated scheduled task management
+  - Improved help information
+  - Support for more options
+- merger.js Merger Engine
+  - Fixed mergeMemory empty content handling
+  - Optimized mergeLearnings deduplication logic
+  - Added getStrategyName method
+
+### Documentation 📖
+- Updated README.md - Improved usage instructions and examples
+- Added TEST_REPORT.md - Test report
+- Updated PUBLISH_CHECKLIST.md - Publishing checklist
+
+---
+
+## [2.1.1] - 2026-03-15
+
+### Added ✨
+- OpenClaw Environment Variable Support
+  - Read `OPENCLAW_HOME`, `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH`
+  - Automatically get `agent.workspace` configuration
+  - Ensure backup and restore to correct paths
+- backup.js Backup Execution Module
+  - Read OpenClaw workspace path
+  - Select files to backup based on configuration
+  - Upload to GitHub repository
+- restore.js Restore Execution Module
+  - Read OpenClaw workspace path
+  - Handle files based on restore strategy (overwrite/merge/append/skip)
+  - Fine-grained restore logic
+
+### Improved 🔧
+- index.js Refactoring
+  - Integrated backup.js and restore.js
+  - Support --verbose to display OpenClaw configuration
+  - Improved command processing
+
+---
+
+## [2.1.0] - 2026-03-15
+
+### Added ✨
+- Interactive Configuration Wizard After Installation
+  - Simple two-choice: backup or restore
+  - 5-step configuration flow, clear guidance
+  - Support timeout auto-skip
+- Sensitive Information Protection Mechanism
+  - Users can choose which sensitive information to backup
+  - By default does not backup .env, pairing and other sensitive files
+  - Clear risk prompts
+- Fine-grained Restore Strategy
+  - Safe restore: Preserve local sensitive configuration
+  - Full restore: Overwrite all configuration
+  - Custom selection: Manually select restore content
+- Restore Preview Functionality
+  - Display files to be restored/merged/appended/skipped
+  - Execute after confirmation
+- New Commands
+  - `setup` - Start configuration wizard
+  - `backup` - Execute backup
+  - `restore` - Restore configuration
+  - `config` - View configuration
+  - `status` - View status
+
+### Improved 🔧
+- Merger Engine Optimization
+  - Support file-level restore strategy
+  - MEMORY.md intelligent merge
+  - .learnings/ append with deduplication
+- Configuration Management
+  - Local configuration file .claw-migrate/config.json
+  - Support modifying configuration anytime
+  - Configuration validation
+
+### Documentation 📖
+- DESIGN_SPEC.md - Complete design specifications
+- POST_INSTALL_WIZARD.md - Installation wizard design
+- USER_INTERACTION_DESIGN.md - User interaction design
+
+---
 
 ## [2.0.2] - 2026-03-15
-
-### 修复 🐛
-- 统一技能名称：将所有文档和代码中的 `MigrateKit` 改为 `claw-migrate`
-  - src/index.js 帮助文本示例
-  - IMPLEMENTATION.md 架构图示例
-- 添加 `claw-migrate` 作为 bin 别名
-
-### 改进 🔧
-- SKILL.md 添加 `metadata.openclaw` 配置（emoji、requires、primaryEnv）
-- SKILL.md 添加 `homepage` 链接到 GitHub 仓库
 
 ---
 
 ## [2.0.1] - 2026-03-15
 
-### 修复 🐛
-- 统一技能名称：将帮助文本中的 `MigrateKit` 改为 `claw-migrate`
-- 添加 `claw-migrate` 作为 bin 别名
+### Fixed 🐛
+- Unified skill name: Changed `MigrateKit` to `claw-migrate` in help text
+- Added `claw-migrate` as bin alias
 
-### 改进 🔧
-- SKILL.md 添加 `metadata.openclaw` 配置（emoji、requires、primaryEnv）
-- SKILL.md 添加 `homepage` 链接到 GitHub 仓库
+### Improved 🔧
+- SKILL.md added `metadata.openclaw` configuration (emoji, requires, primaryEnv)
+- SKILL.md added `homepage` link to GitHub repository
 
 ---
 
 ## [2.0.0] - 2026-03-15
 
-### 新增 ✨
-- 从 GitHub 私有仓库拉取 OpenClaw 配置
-- 智能增量合并策略（不覆盖本地配置）
-- 自动备份与回滚支持
-- 差异预览模式（--dry-run）
-- 支持环境变量或交互式输入 GitHub Token
-- 按类型迁移（config/skills/memory/learnings）
+### Added ✨
+- Pull OpenClaw configuration from GitHub private repository
+- Intelligent incremental merge strategy (does not overwrite local configuration)
+- Automatic backup and rollback support
+- Difference preview mode (--dry-run)
+- Support environment variables or interactive input of GitHub Token
+- Migrate by type (config/skills/memory/learnings)
 
-### 改进 🔧
-- 完整的单元测试覆盖（8 个测试用例）
-- GitHub Actions CI/CD 配置
-- 代码质量检查工作流
-- 依赖更新检查
+### Improved 🔧
+- Complete unit test coverage (8 test cases)
+- GitHub Actions CI/CD configuration
+- Code quality check workflow
+- Dependency update check
 
-### 安全 🔒
-- 敏感信息脱敏处理
-- Token 不保存，仅本次会话使用
-- 原子写入避免文件损坏
+### Security 🔒
+- Sensitive information masking
+- Token not saved, only used for current session
+- Atomic writes to avoid file corruption
 
-### 文档 📖
-- 完整的使用文档（README.md）
-- 实现方案说明（IMPLEMENTATION.md）
-- 使用示例（EXAMPLES.md）
-- 贡献指南（CONTRIBUTING.md）
+### Documentation 📖
+- Complete usage documentation (README.md)
+- Implementation description (IMPLEMENTATION.md)
+- Usage examples (EXAMPLES.md)
+- Contributing guidelines (CONTRIBUTING.md)
 
 ---
 
-## 版本说明
+## Version Notes
 
-### 语义化版本
+### Semantic Versioning
 
-- **主版本号（Major）**: 不兼容的 API 变更
-- **次版本号（Minor）**: 向后兼容的功能新增
-- **修订号（Patch）**: 向后兼容的问题修复
+- **Major Version**: Incompatible API changes
+- **Minor Version**: Backward-compatible new features
+- **Patch Version**: Backward-compatible bug fixes
 
-### 标签说明
+### Tag Description
 
-- `[Unreleased]`: 未发布的功能
-- `[2.0.0]`: 重大版本更新
-- `[1.0.0]`: 初始版本
+- `[Unreleased]`: Unreleased features
+- `[2.0.0]`: Major version update
+- `[1.0.0]`: Initial version

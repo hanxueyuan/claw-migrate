@@ -1,58 +1,60 @@
-# claw-migrate 实现方案总结
+# claw-migrate Implementation Summary
 
-## 架构设计
+## Architecture Design
 
-### v2.0.0 新架构
+### v2.0.0 New Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      用户命令                                │
+│                      User Command                            │
 │   openclaw skill run claw-migrate --repo <owner>/<repo>      │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│   index.js - 主入口                                          │
-│   • 命令行参数解析                                            │
-│   • GitHub Token 获取（环境变量 → gh CLI → 交互式）            │
-│   • 协调各模块执行                                            │
+│   index.js - Main Entry Point                                │
+│   • Command line argument parsing                            │
+│   • GitHub Token acquisition (env → gh CLI → interactive)    │
+│   • Coordinate module execution                              │
 └─────────────────────────────────────────────────────────────┘
             │              │              │
             ▼              ▼              ▼
     ┌───────────┐  ┌───────────┐  ┌───────────┐
     │ github.js │  │ merger.js │  │ writer.js │
     │           │  │           │  │           │
-    │ GitHub    │  │ 合并引擎  │  │ 文件写入  │
-    │ API 访问   │  │ 智能合并  │  │ 备份管理  │
+    │ GitHub    │  │ Merger    │  │ File      │
+    │ API Access│  │ Engine    │  │ Writing   │
+    │           │  │ Intelligent│  │ Backup    │
+    │           │  │ Merge     │  │ Management│
     └───────────┘  └───────────┘  └───────────┘
 ```
 
-## 核心模块
+## Core Modules
 
-### 1. github.js - GitHub API 访问
+### 1. github.js - GitHub API Access
 
-**职责**：
-- 通过 GitHub REST API 读取私有仓库文件
-- 递归遍历目录获取文件列表
-- 文件内容解码（base64 → UTF-8）
+**Responsibilities**:
+- Read private repository files via GitHub REST API
+- Recursively traverse directories to get file list
+- File content decoding (base64 → UTF-8)
 
-**关键方法**：
+**Key Methods**:
 ```javascript
 class GitHubReader {
-  testConnection()      // 测试连接，获取仓库信息
-  getFileList(type)     // 获取文件列表
-  getFileContent(path)  // 获取文件内容
+  testConnection()      // Test connection, get repository info
+  getFileList(type)     // Get file list
+  getFileContent(path)  // Get file content
 }
 ```
 
-**认证流程**：
-1. 优先使用 `GITHUB_TOKEN` 环境变量
-2. 其次尝试 `gh auth token`（gh CLI）
-3. 最后交互式提示用户输入
+**Authentication Flow**:
+1. Prefer `GITHUB_TOKEN` environment variable
+2. Then try `gh auth token` (gh CLI)
+3. Finally interactively prompt user for input
 
-### 2. config.js - 配置管理
+### 2. config.js - Configuration Management
 
-**文件分类**：
+**File Categories**:
 ```javascript
 FILE_CATEGORIES = {
   CORE_CONFIG: ['AGENTS.md', 'SOUL.md', ...],
@@ -64,159 +66,159 @@ FILE_CATEGORIES = {
 }
 ```
 
-**合并策略**：
+**Merge Strategies**:
 ```javascript
 MERGE_STRATEGIES = {
-  OVERWRITE: ['CORE_CONFIG', ...],  // 直接覆盖
-  MERGE: ['MEMORY', 'LEARNINGS'],   // 智能合并
-  SKIP: ['SKILLS', 'ENV']           // 本地已有则跳过
+  OVERWRITE: ['CORE_CONFIG', ...],  // Direct overwrite
+  MERGE: ['MEMORY', 'LEARNINGS'],   // Intelligent merge
+  SKIP: ['SKILLS', 'ENV']           // Skip if exists locally
 }
 ```
 
-### 3. merger.js - 合并引擎
+### 3. merger.js - Merger Engine
 
-**核心逻辑**：
+**Core Logic**:
 ```javascript
 class Merger {
-  shouldMerge(category)   // 判断是否应该合并
-  merge(category, local, remote)  // 执行合并
-  mergeMemory(local, remote)      // 记忆合并
-  mergeLearnings(local, remote)   // 学习记录合并
+  shouldMerge(category)   // Determine if should merge
+  merge(category, local, remote)  // Execute merge
+  mergeMemory(local, remote)      // Memory merge
+  mergeLearnings(local, remote)   // Learning records merge
 }
 ```
 
-**合并策略详解**：
+**Merge Strategy Details**:
 
-| 文件类型 | 策略 | 说明 |
+| File Type | Strategy | Description |
 |---------|------|------|
-| 核心配置 | 跳过 | 本地已有则保留，避免覆盖用户定制 |
-| 技能 | 跳过 | 仅添加远端有而本地没有的 |
-| 记忆 | 合并 | 保留本地，追加远端新增 section |
-| 学习记录 | 追加 | 基于日期 + 内容去重后追加 |
-| .env | 跳过 | 保留本地配置 |
+| Core configuration | Skip | Preserve if exists locally, avoid overwriting user customization |
+| Skills | Skip | Only add what exists remotely but not locally |
+| Memory | Merge | Preserve local, append remote new sections |
+| Learning records | Append | Append after date + content deduplication |
+| .env | Skip | Preserve local configuration |
 
-### 4. writer.js - 文件写入
+### 4. writer.js - File Writing
 
-**职责**：
-- 创建备份（迁移前）
-- 原子写入（临时文件 + 重命名）
-- 备份恢复
-- 清理旧备份
+**Responsibilities**:
+- Create backup (before migration)
+- Atomic writing (temporary file + rename)
+- Backup restore
+- Clean up old backups
 
-**备份策略**：
-- 位置：`.migrate-backup/<timestamp>/`
-- 保留数量：最近 10 个
-- 内容：现有配置文件、memory、.learnings、skills
+**Backup Strategy**:
+- Location: `.migrate-backup/<timestamp>/`
+- Retention: Last 10 backups
+- Content: Existing configuration files, memory, .learnings, skills
 
-## 执行流程
+## Execution Flow
 
 ```
-1. 解析命令行参数
+1. Parse command line arguments
    │
    ▼
-2. 获取 GitHub Token
-   ├─ GITHUB_TOKEN 环境变量
+2. Get GitHub Token
+   ├─ GITHUB_TOKEN environment variable
    ├─ gh CLI
-   └─ 交互式输入
+   └─ Interactive input
    │
    ▼
-3. 测试 GitHub 连接
+3. Test GitHub connection
    │
    ▼
-4. 获取文件列表
+4. Get file list
    │
    ▼
-5. 预览模式？
-   ├─ 是 → 显示将迁移的文件，退出
-   └─ 否 → 继续
+5. Preview mode?
+   ├─ Yes → Display files to migrate, exit
+   └─ No → Continue
    │
    ▼
-6. 创建备份
+6. Create backup
    │
    ▼
-7. 逐个处理文件
-   ├─ 本地没有 → 直接复制
-   ├─ 本地有 + 可合并 → 合并
-   └─ 本地有 + 不可合并 → 跳过
+7. Process files one by one
+   ├─ Not exists locally → Direct copy
+   ├─ Exists locally + mergeable → Merge
+   └─ Exists locally + not mergeable → Skip
    │
    ▼
-8. 输出统计和后续步骤
+8. Output statistics and next steps
 ```
 
-## 关键设计决策
+## Key Design Decisions
 
-### 1. 为什么改为 GitHub 为基础？
+### 1. Why Switch to GitHub-Based?
 
-**v1.0.0（SSH 同步）的问题**：
-- 需要配置 SSH 免密登录，门槛高
-- 源机器必须在线且可访问
-- 不适合灾难恢复场景
+**v1.0.0 (SSH Sync) Issues**:
+- Requires SSH passwordless login configuration, high threshold
+- Source machine must be online and accessible
+- Not suitable for disaster recovery scenarios
 
-**v2.0.0（GitHub 拉取）的优势**：
-- 用户已有 GitHub 仓库
-- 源机器不需要在线
-- 适合新安装、配置恢复、多设备同步
+**v2.0.0 (GitHub Pull) Advantages**:
+- Users already have GitHub repositories
+- Source machine doesn't need to be online
+- Suitable for new installation, configuration restore, multi-device sync
 
-### 2. 为什么采用增量合并策略？
+### 2. Why Adopt Incremental Merge Strategy?
 
-**场景分析**：
-- 新安装：本地无配置 → 完全复制
-- 配置恢复：本地配置损坏 → 覆盖恢复
-- 多设备同步：本地有配置 → 合并更新
+**Scenario Analysis**:
+- New installation: No local configuration → Full copy
+- Configuration restore: Local configuration damaged → Overwrite restore
+- Multi-device sync: Local configuration exists → Merge update
 
-**决策**：
-- 默认采用保守策略：不覆盖本地已有配置
-- 提供 `--force` 选项（未来）用于强制覆盖
-- 自动备份，支持回滚
+**Decision**:
+- Default to conservative strategy: Do not overwrite existing local configuration
+- Provide `--force` option (future) for forced overwrite
+- Automatic backup, support rollback
 
-### 3. 敏感信息处理
+### 3. Sensitive Information Handling
 
-**原则**：
-- `.env` 文件：本地没有则复制，有则保留本地
-- 不强制覆盖用户的 API keys
-- 迁移后提示用户检查敏感配置
+**Principles**:
+- `.env` file: Copy if not exists locally, preserve if exists
+- Do not force overwrite user's API keys
+- Prompt user to check sensitive configuration after migration
 
-## 测试策略
+## Testing Strategy
 
-### 单元测试
+### Unit Tests
 
 ```javascript
 // tests/merger.test.js
 describe('Merger', () => {
-  test('mergeMemory - 本地有内容则保留', () => {...});
-  test('mergeLearnings - 追加去重', () => {...});
-  test('shouldMerge - 正确判断合并策略', () => {...});
+  test('mergeMemory - preserve if local has content', () => {...});
+  test('mergeLearnings - append with deduplication', () => {...});
+  test('shouldMerge - correctly determine merge strategy', () => {...});
 });
 ```
 
-### 集成测试
+### Integration Tests
 
 ```bash
-# 1. 创建测试仓库
-# 2. 执行迁移
-# 3. 验证文件是否正确
-# 4. 验证备份是否创建
+# 1. Create test repository
+# 2. Execute migration
+# 3. Verify files are correct
+# 4. Verify backup is created
 ```
 
-## 未来改进
+## Future Improvements
 
-### 短期
-- [ ] 添加 `--force` 选项（强制覆盖）
-- [ ] 添加 `--exclude` 选项（排除特定文件）
-- [ ] 改进记忆文件的 section 级合并
+### Short Term
+- [ ] Add `--force` option (forced overwrite)
+- [ ] Add `--exclude` option (exclude specific files)
+- [ ] Improve section-level merge for memory files
 
-### 中期
-- [ ] 支持从 Git 分支拉取
-- [ ] 支持配置文件差异对比
-- [ ] 添加迁移后验证步骤
+### Medium Term
+- [ ] Support pulling from Git branches
+- [ ] Support configuration file diff comparison
+- [ ] Add post-migration verification step
 
-### 长期
-- [ ] 支持双向同步
-- [ ] 支持冲突解决 UI
-- [ ] 支持定时自动同步
+### Long Term
+- [ ] Support bidirectional sync
+- [ ] Support conflict resolution UI
+- [ ] Support scheduled automatic sync
 
-## 参考资料
+## References
 
 - [GitHub REST API](https://docs.github.com/en/rest)
 - [Personal Access Tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
-- [OpenClaw 架构文档](/usr/lib/node_modules/openclaw/docs)
+- [OpenClaw Architecture Documentation](/usr/lib/node_modules/openclaw/docs)

@@ -1,220 +1,372 @@
-# claw-migrate - OpenClaw GitHub 配置迁移工具
+# claw-migrate - OpenClaw GitHub Configuration Migration Tool
 
-从 GitHub 私有仓库拉取 OpenClaw 配置到本地，支持智能合并，保留本地已有配置。
+Pull OpenClaw configuration from GitHub private repository to local, supports intelligent merging, preserves existing local configuration.
 
-## ⚡ 快速开始
+**Version**: v2.2.0  
+**Last Updated**: 2026-03-15
 
-### 1. 安装技能
+---
+
+## ⚡ Quick Start
+
+### 1. Install Skill
 
 ```bash
 openclaw skill install claw-migrate
 ```
 
-### 2. 使用
+### 2. Configuration (First Use)
 
 ```bash
-# 设置 GitHub Token（可选，也可以交互式输入）
+# Start configuration wizard
+openclaw skill run claw-migrate setup
+```
+
+### 3. Usage
+
+```bash
+# Set GitHub Token (optional, can also be entered interactively)
 export GITHUB_TOKEN=ghp_xxx
 
-# 迁移配置
-openclaw skill run claw-migrate --repo your-username/your-repo
-```
+# Execute backup
+openclaw skill run claw-migrate backup
 
-### 3. 完成！
-
-配置已迁移到本地，可以开始使用了。
-
----
-
-## 使用场景
-
-### 场景 1：新安装的 OpenClaw
-
-```
-刚完成 openclaw install
-      ↓
-从 GitHub 私有仓库拉取配置
-      ↓
-快速获得完整的团队配置、技能、记忆
-```
-
-### 场景 2：配置恢复
-
-```
-本地配置损坏或丢失
-      ↓
-从 GitHub 仓库恢复配置
-      ↓
-恢复到之前的工作状态
-```
-
-### 场景 3：多设备同步
-
-```
-在多个设备上运行 OpenClaw
-      ↓
-从中央仓库拉取最新配置
-      ↓
-保持配置一致
+# Restore configuration
+openclaw skill run claw-migrate restore
 ```
 
 ---
 
-## 功能特性
+## 📋 Features
 
-- ✅ **零外部依赖** - 仅使用 Node.js 内置模块
-- ✅ **智能合并** - 不覆盖本地已有配置
-- ✅ **自动备份** - 迁移前自动备份
-- ✅ **预览模式** - 先查看会变更什么
-- ✅ **交互式输入** - Token 缺失时提示输入
-- ✅ **按类型迁移** - 支持 config/skills/memory/learnings
+### Core Features
+
+- ✅ **Bidirectional Sync** - Supports backup to GitHub and restore from GitHub
+- ✅ **Intelligent Merging** - Does not overwrite existing local configuration, automatically merges memory and learning records
+- ✅ **Sensitive Information Protection** - By default does not backup .env, pairing and other sensitive files
+- ✅ **Scheduled Backup** - Supports daily/weekly/monthly automatic backup
+- ✅ **Configuration Management** - View, modify, reset configuration anytime
+- ✅ **Restore Preview** - Preview files to be restored/merged/appended/skipped before execution
+
+### New Features (v2.2.0)
+
+- ✨ Configuration Management Module (`config` command)
+- ✨ Scheduled Task Scheduler (`scheduler` command)
+- ✨ Complete Unit Test Suite (86 test cases)
+- ✨ Code Coverage Report
 
 ---
 
-## 命令参数
+## 📖 Usage Instructions
+
+### Command List
+
+| Command | Description | Example |
+|------|------|------|
+| `setup` | Start configuration wizard | `openclaw skill run claw-migrate setup` |
+| `backup` | Execute backup | `openclaw skill run claw-migrate backup` |
+| `restore` | Restore configuration | `openclaw skill run claw-migrate restore` |
+| `config` | View configuration | `openclaw skill run claw-migrate config` |
+| `config --edit` | Modify configuration | `openclaw skill run claw-migrate config --edit` |
+| `config --reset` | Reset configuration | `openclaw skill run claw-migrate config --reset` |
+| `status` | View status | `openclaw skill run claw-migrate status` |
+| `scheduler --start` | Start scheduled task | `openclaw skill run claw-migrate scheduler --start` |
+| `scheduler --stop` | Stop scheduled task | `openclaw skill run claw-migrate scheduler --stop` |
+| `scheduler --logs` | View logs | `openclaw skill run claw-migrate scheduler --logs` |
+
+### Configuration Wizard
+
+After running the `setup` command, you will enter an interactive configuration wizard:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 Please select the operation you want to perform:
+
+   1. 🔵 Start Backup Configuration
+      Backup local configuration to GitHub private repository
+      Suitable for: First-time use, regular backup
+
+   2. 🟢 Restore/Migrate Configuration
+      Restore configuration from GitHub repository to local
+      Suitable for: New machine, configuration restore
+
+   3. ⚪ Configure Later
+      Skip wizard, configure manually later
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### Backup Configuration Flow
+
+1. **Enter GitHub Repository** - Format: `owner/repo`
+2. **Select Authentication Method** - Environment variable/gh CLI/Manual input
+3. **Select Backup Content** - Core configuration/Skills/Memory/Learning records
+4. **Select Sensitive Information** - .env/pairing/sessions (not backed up by default)
+5. **Set Backup Frequency** - Daily/Weekly/Monthly/Manual
+
+### Restore Configuration Flow
+
+1. **Enter GitHub Repository** - Format: `owner/repo`
+2. **Select Authentication Method** - Environment variable/gh CLI/Manual input
+3. **Select Restore Strategy**:
+   - Safe Restore: Preserve local sensitive configuration (recommended)
+   - Full Restore: Overwrite all configuration
+   - Custom Selection: Manually select content to restore
+4. **Preview Restore Content** - Execution after confirmation
+
+---
+
+## 🔧 Configuration Management
+
+### View Configuration
 
 ```bash
-openclaw skill run claw-migrate --repo <owner>/<repo> [选项]
+openclaw skill run claw-migrate config
 ```
 
-| 参数 | 简写 | 必填 | 说明 |
-|------|------|------|------|
-| `--repo` | `-r` | ✅ | GitHub 仓库（格式：owner/repo） |
-| `--branch` | `-b` | ❌ | 分支名（默认：main） |
-| `--path` | `-p` | ❌ | 仓库内的路径（默认：根目录） |
-| `--type` | `-t` | ❌ | 迁移类型：`all`（默认）`config` `memory` `learnings` `skills` |
-| `--dry-run` | | ❌ | 预览模式，不实际写入文件 |
-| `--no-backup` | | ❌ | 不创建备份（默认创建） |
-| `--verbose` | `-v` | ❌ | 详细输出 |
+Example output:
+```
+📋 Configuration Information
 
----
+   Repository: hanxueyuan/openclaw-backup
+   Branch: main
+   Authentication: env
+   Backup Content: core, skills, memory, learnings
+   Sensitive Information: None
+   Backup Frequency: daily
+   Created: 2026-03-15T10:00:00.000Z
+   Updated: 2026-03-15T11:00:00.000Z
+```
 
-## 使用示例
-
-### 基本用法
+### Modify Configuration
 
 ```bash
-# 从 GitHub 仓库拉取配置
-openclaw skill run claw-migrate --repo your-username/your-repo
-
-# 指定分支和路径
-openclaw skill run claw-migrate \
-  --repo your-username/your-repo \
-  --branch main \
-  --path workspace/projects/workspace
-
-# 预览模式（先看会变更什么）
-openclaw skill run claw-migrate \
-  --repo your-username/your-repo \
-  --dry-run
+openclaw skill run claw-migrate config --edit
 ```
 
-### 仅拉取特定类型
+### Reset Configuration
 
 ```bash
-# 仅配置文件
-openclaw skill run claw-migrate --repo your-username/your-repo --type config
-
-# 仅记忆文件
-openclaw skill run claw-migrate --repo your-username/your-repo --type memory
-
-# 仅技能
-openclaw skill run claw-migrate --repo your-username/your-repo --type skills
-
-# 仅学习记录
-openclaw skill run claw-migrate --repo your-username/your-repo --type learnings
+openclaw skill run claw-migrate config --reset
 ```
 
 ---
 
-## 文件迁移策略
+## ⏰ Scheduled Backup
 
-| 文件类型 | 策略 |
-|---------|------|
-| AGENTS.md, SOUL.md, IDENTITY.md, USER.md | 本地没有则复制，有则跳过 |
-| TOOLS.md, HEARTBEAT.md | 本地没有则复制，有则跳过 |
-| skills/ | 复制远端有而本地没有的技能 |
-| MEMORY.md, memory/ | 合并（远端新增的添加） |
-| .learnings/ | 追加去重 |
-| .env | 本地没有则复制，有则保留本地 |
+### Start Scheduled Task
+
+```bash
+openclaw skill run claw-migrate scheduler --start
+```
+
+Example output:
+```
+📅 Backup Frequency: daily
+⏰ Cron Expression: 0 2 * * *
+
+✅ Scheduled task started!
+
+📌 Management Commands:
+
+   • View status: openclaw skill run claw-migrate status
+   • Stop task: openclaw skill run claw-migrate scheduler --stop
+   • View logs: openclaw skill run claw-migrate scheduler --logs
+```
+
+### Stop Scheduled Task
+
+```bash
+openclaw skill run claw-migrate scheduler --stop
+```
+
+### View Logs
+
+```bash
+openclaw skill run claw-migrate scheduler --logs
+```
 
 ---
 
-## 认证方式
+## 📊 View Status
 
-### 1. 环境变量（推荐）
+```bash
+openclaw skill run claw-migrate status
+```
+
+Example output:
+```
+📊 Status Information
+
+   Repository: hanxueyuan/openclaw-backup
+   Branch: main
+   Status: ✅ Configured
+   Backup Frequency: daily
+   Next Backup: 2026-03-16 02:00:00
+```
+
+---
+
+## 📁 File Migration Strategy
+
+| File Type | Backup Strategy | Restore Strategy |
+|---------|---------|---------|
+| AGENTS.md, SOUL.md, IDENTITY.md, USER.md | ✅ Backup | ✅ Overwrite |
+| TOOLS.md, HEARTBEAT.md | ✅ Backup | ✅ Overwrite |
+| skills/ | ✅ Backup | ✅ Overwrite |
+| MEMORY.md, memory/ | ✅ Backup | 🔄 Merge |
+| .learnings/ | ✅ Backup | ➕ Append with deduplication |
+| .env | ⚠️ Optional | ⏭️ Skip (Safe Mode) |
+| feishu/pairing/ | ⚠️ Optional | ⏭️ Skip (Safe Mode) |
+
+---
+
+## 🔐 Authentication Methods
+
+### 1. Environment Variable (Recommended)
 
 ```bash
 export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
-openclaw skill run claw-migrate --repo your-username/your-repo
+openclaw skill run claw-migrate backup
 ```
 
-### 2. gh CLI（如果已安装）
+### 2. gh CLI (If Installed)
 
+Ensure you are logged in to GitHub:
 ```bash
-gh auth token | openclaw skill run claw-migrate --repo your-username/your-repo
+gh auth login
 ```
 
-### 3. 交互式输入
+The tool will automatically use `gh auth token` to get the token.
 
-如果没有检测到 Token，工具会提示用户输入。
+### 3. Interactive Input
+
+If no token is detected, the tool will prompt the user to input.
 
 ---
 
-## 备份与恢复
+## 📝 Usage Examples
 
-### 备份位置
-
-迁移前自动创建备份：
-```
-.migrate-backup/
-└── 2024-01-15T10-30-00-000Z/
-    ├── AGENTS.md
-    ├── SOUL.md
-    ├── MEMORY.md
-    ├── memory/
-    └── .learnings/
-```
-
-### 恢复备份
+### Scenario 1: New Machine Configuration Restore
 
 ```bash
-# 列出可用备份
-ls .migrate-backup/
+# 1. Install skill
+openclaw skill install claw-migrate
 
-# 恢复特定文件
-cp .migrate-backup/2024-01-15T10-30-00-000Z/AGENTS.md ./AGENTS.md
+# 2. Start restore wizard
+openclaw skill run claw-migrate setup
+
+# 3. Select "Restore/Migrate Configuration"
+# 4. Enter repository name and authentication information
+# 5. Select "Safe Restore" strategy
+# 6. Confirm restore
+```
+
+### Scenario 2: Regular Backup
+
+```bash
+# 1. First-time configuration
+openclaw skill run claw-migrate setup
+
+# 2. Start scheduled backup
+openclaw skill run claw-migrate scheduler --start
+
+# 3. View status
+openclaw skill run claw-migrate status
+```
+
+### Scenario 3: Manual Backup
+
+```bash
+# Execute a backup
+openclaw skill run claw-migrate backup
+```
+
+### Scenario 4: Modify Configuration
+
+```bash
+# Modify repository or backup frequency
+openclaw skill run claw-migrate config --edit
 ```
 
 ---
 
-## 故障排除
+## 🧪 Testing
 
-| 错误 | 原因 | 解决方案 |
+### Run All Tests
+
+```bash
+cd /workspace/projects/workspace/skills/claw-migrate
+npm test
+```
+
+### Run Specific Tests
+
+```bash
+npm run test:merger        # Merger engine tests
+npm run test:setup         # Configuration wizard tests
+npm run test:backup        # Backup module tests
+npm run test:restore       # Restore module tests
+npm run test:config        # Configuration management tests
+npm run test:scheduler     # Scheduler tests
+npm run test:integration   # Integration tests
+```
+
+### Test Results
+
+```
+📊 Overall Statistics:
+   Total Tests: 86
+   Passed: 86
+   Failed: 0
+   Pass Rate: 100.0%
+
+📈 Code Coverage: 68.8%
+```
+
+---
+
+## ❓ Troubleshooting
+
+| Error | Cause | Solution |
 |------|------|---------|
-| 404 Not Found | 仓库名错误或无权限 | 检查仓库名，确认 Token 权限 |
-| 401 Unauthorized | Token 无效 | 重新生成 Token |
-| Rate limit exceeded | API 请求超限 | 等待后重试或使用认证的 Token |
+| 404 Not Found | Repository name incorrect or no permission | Check repository name, confirm token permissions |
+| 401 Unauthorized | Invalid token | Regenerate token |
+| Rate limit exceeded | API request limit exceeded | Wait and retry, or use authenticated token |
+| Configuration file not found | setup not run | Run `openclaw skill run claw-migrate setup` |
+| Scheduled task start failed | No crontab permission | Manually set cron or use internal scheduler |
 
 ---
 
-## 技术规格
+## 📦 Technical Specifications
 
-- **安装大小**: ~50KB
-- **依赖**: 无（纯 Node.js 内置模块）
-- **Node.js 版本**: >= 14.0.0
-- **许可证**: MIT
-
----
-
-## 相关链接
-
-- **GitHub 仓库**: https://github.com/hanxueyuan/claw-migrate
-- **问题反馈**: https://github.com/hanxueyuan/claw-migrate/issues
-- **OpenClaw 文档**: https://docs.openclaw.ai
+- **Install Size**: ~50KB
+- **Dependencies**: None (Pure Node.js built-in modules)
+- **Node.js Version**: >= 14.0.0
+- **Testing**: 86 unit tests + integration tests
+- **License**: MIT
 
 ---
 
-## 许可证
+## 📄 Related Documentation
 
-MIT License - 详见 [LICENSE](LICENSE) 文件
+- [CHANGELOG.md](CHANGELOG.md) - Version change records
+- [EXAMPLES.md](EXAMPLES.md) - More usage examples
+- [DESIGN_SPEC.md](DESIGN_SPEC.md) - Design specifications
+- [PRIVACY_COMPLIANCE.md](PRIVACY_COMPLIANCE.md) - Privacy compliance report
+- [TEST_REPORT.md](TEST_REPORT.md) - Test report
+
+---
+
+## 🔗 Related Links
+
+- **GitHub Repository**: https://github.com/hanxueyuan/claw-migrate
+- **Issue Feedback**: https://github.com/hanxueyuan/claw-migrate/issues
+- **OpenClaw Documentation**: https://docs.openclaw.ai
+
+---
+
+## 📝 License
+
+MIT License - See [LICENSE](LICENSE) file
