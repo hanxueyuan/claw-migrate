@@ -5,6 +5,27 @@ All important project changes will be recorded in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 version numbers follow [Semantic Versioning](https://semver.org/).
 
+## [2.2.1] - 2026-03-16
+
+### Added ✨
+- Internationalization (i18n) - All core documentation translated to English
+  - README.md - Complete English translation
+  - SKILL.md - Complete English translation
+  - CHANGELOG.md - Complete English translation
+  - CONTRIBUTING.md - Complete English translation
+  - EXAMPLES.md - Complete English translation
+  - POST_INSTALL_WIZARD.md - Complete English translation
+  - DESIGN_SPEC.md - Complete English translation
+  - IMPLEMENTATION.md - Complete English translation
+  - MIGRATION_GUIDE.md - Complete English translation
+
+### Documentation 📖
+- All documentation now available in English for international users
+- Technical terms kept accurate during translation
+- Document structure, code blocks, and command examples preserved
+
+---
+
 ## [2.2.0] - 2026-03-15
 
 ### Added ✨

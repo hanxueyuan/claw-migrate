@@ -2,8 +2,8 @@
 
 Pull OpenClaw configuration from GitHub private repository to local, supports intelligent merging, preserves existing local configuration.
 
-**Version**: v2.2.0  
-**Last Updated**: 2026-03-15
+**Version**: v2.2.1  
+**Last Updated**: 2026-03-16
 
 ---
 

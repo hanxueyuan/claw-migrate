@@ -1,25 +1,34 @@
 {
   "name": "claw-migrate",
-  "version": "2.0.2",
-  "description": "OpenClaw GitHub 配置迁移工具 - 从 GitHub 私有仓库拉取配置到本地",
+  "version": "2.2.1",
+  "description": "OpenClaw GitHub Configuration Migration Tool - Supports bidirectional sync, scheduled backup, configuration management",
   "main": "src/index.js",
   "bin": {
-    "migratekit": "./src/index.js",
     "claw-migrate": "./src/index.js"
   },
   "scripts": {
     "start": "node src/index.js",
-    "test": "node tests/merger.test.js",
-    "lint": "node -c src/*.js && echo '✓ JavaScript syntax OK'",
-    "build": "echo 'No build step required (pure JS)'",
-    "clean": "rm -rf node_modules/ *.log"
+    "test": "node tests/run-all-tests.js",
+    "test:merger": "node tests/merger.test.js",
+    "test:setup": "node tests/setup.test.js",
+    "test:backup": "node tests/backup.test.js",
+    "test:restore": "node tests/restore.test.js",
+    "test:config": "node tests/config-manager.test.js",
+    "test:scheduler": "node tests/scheduler.test.js",
+    "test:integration": "node tests/integration.test.js",
+    "test:all": "npm test",
+    "lint": "node -c src/*.js && node -c tests/*.js && echo '✓ JavaScript syntax OK'",
+    "clean": "rm -rf node_modules/ *.log test-results/"
   },
   "keywords": [
     "openclaw",
     "migration",
     "github",
     "configuration",
-    "sync"
+    "sync",
+    "backup",
+    "restore",
+    "schedule"
   ],
   "author": "OpenClaw Team",
   "license": "MIT",
