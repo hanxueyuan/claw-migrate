@@ -1,166 +1,84 @@
-# claw-migrate - OpenClaw Workspace Backup & Restore
+# claw-migrate - OpenClaw Migration Instructions
 
-> 🔄 OpenClaw workspace backup & restore tool  
-> **Your data, your rules** - Simple, safe, controlled
+> 🔄 **No code needed** - Just clear instructions for backup and restore
 
 [![Version](https://img.shields.io/github/package-json/v/hanxueyuan/claw-migrate)](https://github.com/hanxueyuan/claw-migrate)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CI/CD](https://github.com/hanxueyuan/claw-migrate/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/hanxueyuan/claw-migrate/actions)
 
 ---
 
-## 📖 Introduction
+## 📖 What Is This?
 
-claw-migrate is a backup and restore tool for OpenClaw workspaces. It supports backing up configurations to a GitHub private repository and restoring them to local.
+claw-migrate is **not a software tool**. It's a **set of clear instructions** for backing up and restoring your OpenClaw configuration.
 
-**Design Goal**:
-- 🔄 OpenClaw crashes frequently, need to migrate configurations
-- 💾 Regular backups to prevent data loss
-- 🚀 Quick recovery to minimize downtime
-- 📤 Share configurations for collaboration
+**Think of it as:**
+- 📋 A checklist of what to backup
+- 🗺️ A map of where files go
+- 📝 A guide of what to modify
 
-**Core Features**:
-- ✅ **Fully Controlled** - 20+ backup categories, you decide what to back up
-- ✅ **Smart Restore** - Merge, append, incremental sync strategies
-- ✅ **Secure** - Sensitive info confirmation, private repo protection
-- ✅ **Easy to Use** - Interactive wizard, one-click backup/restore
-- ✅ **Progress Tracking** - Real-time progress bar, duration stats
-- ✅ **Share & Discover** - Share to ClawTalent platform, discover others' configs
+**No installation needed. No commands to run. Just follow the instructions.**
 
 ---
 
-## 🚀 Quick Start
+## 🎯 Quick Guide
 
-### 1. Install
+### What to Backup
 
-```bash
-openclaw skill install claw-migrate
+```
+✅ AGENTS.md, SOUL.md, TOOLS.md, HEARTBEAT.md
+✅ memory/, .learnings/, skills/
+⚠️ USER.md (remove phone/email first)
+⚠️ openclaw.json (remove API keys first)
+❌ .env, credentials/, identity/ (never backup)
 ```
 
-### 2. Configure
+### How to Backup
 
 ```bash
-openclaw skill run claw-migrate setup
+# Simple copy
+mkdir ~/openclaw-backup
+cp /workspace/projects/workspace/*.md ~/openclaw-backup/
+cp -r /workspace/projects/workspace/memory/ ~/openclaw-backup/
 ```
 
-### 3. Backup
+### How to Restore
 
 ```bash
-openclaw skill run claw-migrate backup
-```
+# Copy back
+cp ~/openclaw-backup/*.md /workspace/projects/workspace/
+cp -r ~/openclaw-backup/memory/ /workspace/projects/workspace/
 
-### 4. Restore
-
-```bash
-openclaw skill run claw-migrate restore
-```
-
-### 5. Share (Optional)
-
-```bash
-openclaw skill run claw-migrate share
-```
-
-### 6. Deploy (Optional)
-
-```bash
-openclaw skill run claw-migrate deploy CT-0001
+# Restart
+openclaw gateway restart
 ```
 
 ---
 
-## 📦 Backup Content
+## 📋 Full Instructions
 
-### Core Configuration (Recommended)
-- 🔵 AGENTS.md, SOUL.md, IDENTITY.md, etc.
-- 🟢 skills/ directory
-- 🟣 MEMORY.md
-- 🟡 .learnings/
-
-### Optional Configuration
-- ⚪ cron/, docs/, scripts/, templates/, tests/
-- ⚪ .github/
-
-### Machine-Specific (As Needed)
-- ⚠️ openclaw.json, feishu/, telegram/
-- ⚠️ discord/, whatsapp/, browser/, agents/*/sessions/
-
-### Sensitive Information (Use Caution)
-- 🔴 .env, credentials/, identity/
+See **[SKILL.md](SKILL.md)** for complete instructions including:
+- Detailed backup checklist
+- Step-by-step migration guide
+- What to sanitize before sharing
+- Common mistakes to avoid
+- Troubleshooting tips
 
 ---
 
-## 🔐 Security Best Practices
+## 🔐 Security Tips
 
-1. **Use Private Repositories** - Always backup to GitHub private repos
-2. **Review Before Backup** - The skill shows all files before uploading; review carefully
-3. **Sensitive Files** - Categories like `.env`, `credentials/`, `identity/` contain secrets; only select if you trust the destination
-4. **Token Storage** - GitHub token can be stored in `~/.openclaw/claw-migrate/config.json` for convenience
-5. **Share Carefully** - Only share configurations you want others to see
-
----
-
-## 🎯 Common Commands
-
-| Command | Description |
-|---------|-------------|
-| `openclaw skill run claw-migrate backup` | Backup |
-| `openclaw skill run claw-migrate restore` | Restore |
-| `openclaw skill run claw-migrate share` | Share |
-| `openclaw skill run claw-migrate deploy CT-XXXX` | Deploy |
-| `openclaw skill run claw-migrate search "keyword"` | Search |
-| `openclaw skill run claw-migrate config` | Config Management |
+1. **Use private repos** - Never backup to public GitHub repos
+2. **Remove sensitive info** - Phone numbers, emails, API keys
+3. **Review before commit** - Always check what you're uploading
+4. **Re-pair after restore** - Channels need re-authentication
 
 ---
 
-## 📝 Usage Examples
+## 🌐 Links
 
-### New Machine Migration
-
-```bash
-# 1. Install the skill
-openclaw skill install claw-migrate
-
-# 2. Setup wizard
-openclaw skill run claw-migrate setup
-
-# 3. Restore configuration
-openclaw skill run claw-migrate restore
-```
-
-### Core Config Only
-
-```bash
-openclaw skill run claw-migrate setup
-# When selecting backup content, enter: r (recommended only)
-openclaw skill run claw-migrate backup
-```
-
-### Preview Backup
-
-```bash
-openclaw skill run claw-migrate backup --dry-run
-```
-
----
-
-## 🛠️ Troubleshooting
-
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `404 Not Found` | Repo doesn't exist or no access | Check repo name and token permissions |
-| `401 Unauthorized` | Invalid token | Regenerate token |
-| `Rate limit exceeded` | API rate limit hit | Wait and retry, or use an authenticated token |
-| `Config not found` | Setup not run | Run `openclaw skill run claw-migrate setup` first |
-
----
-
-## 🌐 Related Links
-
-- **[GitHub Repository](https://github.com/hanxueyuan/claw-migrate)** - Source code and Issues
-- **[ClawTalent](https://clawtalent.shop)** - Configuration sharing platform
-- **[ClawHub](https://clawhub.ai/hanxueyuan/claw-migrate)** - ClawHub page
-- **[OpenClaw Docs](https://github.com/openclaw/openclaw)** - Framework documentation
+- **[Full Instructions](SKILL.md)** - Complete guide
+- **[GitHub](https://github.com/hanxueyuan/claw-migrate)** - Source
+- **[ClawTalent](https://clawtalent.shop)** - Share configs
 
 ---
 
