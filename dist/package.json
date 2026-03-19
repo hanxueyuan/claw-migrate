@@ -1,7 +1,7 @@
 {
   "name": "claw-migrate",
-  "version": "2.7.4",
-  "description": "OpenClaw workspace backup & restore tool",
+  "version": "2.7.5",
+  "description": "OpenClaw workspace backup & restore tool - simple, safe, controlled",
   "main": "src/index.js",
   "bin": {
     "claw-migrate": "./src/index.js"

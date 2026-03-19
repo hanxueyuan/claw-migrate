@@ -1,19 +1,17 @@
 {
   "name": "claw-migrate",
   "displayName": "claw-migrate",
-  "version": "2.7.3",
-  "description": "Share and deploy OpenClaw configurations from ClawTalent community",
+  "version": "2.7.5",
+  "description": "OpenClaw workspace backup & restore tool - simple, safe, controlled",
   "author": "Han Xueyuan <xueyuan_han@163.com>",
   "license": "MIT",
   "homepage": "https://github.com/hanxueyuan/claw-migrate",
   "repository": "https://github.com/hanxueyuan/claw-migrate",
   "main": "src/index.js",
   "changelog": [
-    "📝 Updated SKILL.md with clearer token handling documentation",
-    "📚 Updated README.md with installation instructions and examples",
-    "🔒 Replaced execSync with execFile for safer command execution",
-    "🟣 NEW: Share command - share configs to ClawTalent platform",
-    "🟠 NEW: Deploy command - deploy configs from ClawTalent",
-    "🔍 NEW: Search command - search ClawTalent marketplace"
+    "Updated SKILL.md and README.md with clearer Chinese documentation",
+    "Better organization of backup categories",
+    "Added more usage examples",
+    "Clarified security best practices"
   ]
 }
