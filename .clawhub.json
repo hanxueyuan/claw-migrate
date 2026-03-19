@@ -1,18 +1,19 @@
 {
   "name": "claw-migrate",
   "displayName": "claw-migrate",
-  "version": "2.7.8",
-  "description": "OpenClaw backup, restore, share, discover instructions - four clear paths",
+  "version": "2.8.0",
+  "description": "OpenClaw workspace backup & restore - automated with user guidance",
   "author": "Han Xueyuan <xueyuan_han@163.com>",
   "license": "MIT",
   "homepage": "https://github.com/hanxueyuan/claw-migrate",
   "repository": "https://github.com/hanxueyuan/claw-migrate",
   "main": "src/index.js",
   "changelog": [
-    "Restructured into 4 clear paths: Backup, Restore, Share, Discover",
-    "Added ClawTalent integration instructions (manual + API)",
-    "Detailed what to share vs not share",
-    "Security checklist for sensitive files",
-    "Quick reference commands for each path"
+    "v2.8.0: Restored executable functionality - now actually backs up and restores",
+    "Automated backup with file scanning and user confirmation",
+    "Automated restore with validation and selective recovery",
+    "ClawTalent integration: share and deploy configs",
+    "Security: auto-excludes sensitive files, scans before share",
+    "Clear guidance at each step - you always know what's happening"
   ]
 }
