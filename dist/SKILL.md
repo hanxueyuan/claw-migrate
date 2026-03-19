@@ -8,46 +8,92 @@ metadata:
 
 # claw-migrate - OpenClaw Backup & Restore
 
-> **Automated backup and restore** with clear guidance at each step
+> **Two modes**: Personal Migration (full backup) · Community Sharing (sanitized)
 
 ---
 
-## 🎯 What This Skill Does
+## 🎯 Two Use Cases
 
-**Automatically backs up**:
+### Mode 1: Personal Migration (Your Use Case)
+
+**Purpose**: Migrate your OpenClaw to a new machine
+
+**What's backed up**:
+- ✅ `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `HEARTBEAT.md` - Team config
+- ✅ `memory/` - Memory database
+- ✅ `.learnings/` - Learning records
+- ✅ `skills/` - Custom skills
+- ✅ `openclaw.json` - **With API keys** (for immediate use)
+- ✅ `feishu/` - **With pairing info** (no re-pair needed)
+- ✅ `.env`, `credentials/`, `identity/` - **If you choose**
+
+**Storage**: Private GitHub repo (only you can access)
+
+**Restore**: Full restore, everything works immediately
+
+---
+
+### Mode 2: Community Sharing (Share to ClawTalent)
+
+**Purpose**: Share your config with others
+
+**What's backed up**:
 - ✅ `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `HEARTBEAT.md`
-- ✅ `memory/` directory
-- ✅ `.learnings/` directory
-- ✅ `skills/` directory (your custom skills)
+- ✅ `skills/` - Custom skills
+- ⚠️ `memory/` - **Optional** (may contain personal info)
+- ⚠️ `.learnings/` - **Optional** (may contain personal info)
 
-**Never backs up** (automatically excluded):
-- ❌ `.env` files
-- ❌ `credentials/`
-- ❌ `identity/`
-- ❌ `logs/`, `browser/`
+**Automatically sanitized**:
+- 🔑 API keys → `${API_KEY}`
+- 📱 Phone numbers → `${PHONE}`
+- 📧 Emails → `${EMAIL}`
+- 🔐 Tokens → `${TOKEN}`
 
-**Guides you through**:
-- 📁 What will be backed up (shows file list)
-- ⚠️ What sensitive files found (asks for confirmation)
-- 🔄 Where to restore (validates target path)
-- ✏️ What to sanitize before sharing
+**Storage**: ClawTalent platform (public or private)
+
+**Deploy**: Others get template, need to fill in their own values
+
+---
+
+## 🚀 Choose Your Command
+
+| Command | Use Case | Sensitive Info |
+|---------|----------|----------------|
+| `backup` | Personal migration | ✅ Included |
+| `backup --personal` | Personal migration | ✅ Included |
+| `share` | Share to ClawTalent | ❌ Auto-removed |
+| `share --sanitize` | Share to ClawTalent | ❌ Auto-removed |
 
 ---
 
 ## 🚀 Commands
 
-### Backup to GitHub
+### Personal Backup (Full, including sensitive info)
 
 ```bash
+# Full backup (for personal migration)
 openclaw skill run claw-migrate backup
+
+# With verbose output
+openclaw skill run claw-migrate backup --verbose
+
+# Preview first
+openclaw skill run claw-migrate backup --dry-run
 ```
 
 **What happens**:
-1. Scans workspace for files to backup
-2. Shows you the file list
-3. Warns about sensitive files
-4. Creates backup archive
-5. Pushes to your GitHub repo
+1. Scans workspace for **all** files
+2. Shows you the complete file list (including sensitive)
+3. Asks for confirmation
+4. Pushes to your **private** GitHub repo
+5. **Includes**: API keys, tokens, pairing info
+
+**⚠️ Important**: Only use with **private** GitHub repos!
+
+```bash
+# Create private repo first
+gh repo create openclaw-backup --private
+```
 
 ### Restore from GitHub
 
@@ -73,19 +119,32 @@ openclaw skill run claw-migrate restore --categories core --dry-run
 
 **Available categories**: `core`, `memory`, `learnings`, `skills`, `docs`, `scripts`
 
-### Share to ClawTalent
+### Share to ClawTalent (Sanitized, for others)
 
 ```bash
+# Share (auto-sanitizes sensitive info)
 openclaw skill run claw-migrate share
+
+# With custom name
+openclaw skill run claw-migrate share --name "My Multi-Agent Setup"
+
+# Preview first (see what will be sanitized)
+openclaw skill run claw-migrate share --dry-run
 ```
 
 **What happens**:
 1. Prepares share package
-2. **Scans for sensitive info** (phone, email, API keys)
-3. Shows what needs to be sanitized
-4. Helps you sanitize
+2. **Auto-scans for sensitive info**:
+   - 📱 Phone numbers → `${YOUR_PHONE}`
+   - 📧 Emails → `${YOUR_EMAIL}`
+   - 🔑 API keys → `${API_KEY}`
+   - 🔐 Tokens → `${TOKEN}`
+3. Shows you what was sanitized
+4. Asks for confirmation
 5. Uploads to ClawTalent
-6. Returns Configuration ID
+6. Returns Configuration ID (e.g., `CT-0001`)
+
+**✅ Safe to share** - All sensitive info removed
 
 ### Deploy from ClawTalent
 
@@ -132,14 +191,31 @@ openclaw skill run claw-migrate search "multi-agent"
 
 ---
 
-## 🔐 Security Features
+## 🔐 Security Comparison
 
-### Automatic Exclusions
-These are **never** backed up without explicit override:
-- `.env*`
-- `credentials/*`
-- `identity/*`
-- `*.log`
+| Feature | `backup` (Personal) | `share` (Community) |
+|---------|--------------------|--------------------|
+| **API Keys** | ✅ Included | ❌ Replaced with `${API_KEY}` |
+| **Tokens** | ✅ Included | ❌ Replaced with `${TOKEN}` |
+| **Phone Numbers** | ✅ Included | ❌ Replaced with `${PHONE}` |
+| **Emails** | ✅ Included | ❌ Replaced with `${EMAIL}` |
+| **Feishu Pairing** | ✅ Included | ❌ Removed |
+| **Memory Data** | ✅ Included | ⚠️ Optional |
+| **Learning Records** | ✅ Included | ⚠️ Optional |
+| **Storage** | Private GitHub | ClawTalent Platform |
+| **Audience** | Only you | Public/Community |
+
+### When to Use Which
+
+**Use `backup` when**:
+- ✅ Migrating to a new machine
+- ✅ Full disaster recovery
+- ✅ You control the GitHub repo (private)
+
+**Use `share` when**:
+- ✅ Sharing your config with others
+- ✅ Publishing to ClawTalent
+- ✅ Creating a template for the community
 
 ### Sensitive Data Detection
 Before share/upload, scans for:
