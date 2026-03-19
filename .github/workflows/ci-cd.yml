@@ -91,11 +91,15 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Install clawhub CLI
-        run: npm install -g @clawhub/cli
+        run: |
+          npm install -g @clawhub/cli
+          echo "$(npm bin -g)" >> $GITHUB_PATH
       - name: Login to ClawHub
         env:
           CLAWHUB_TOKEN: ${{ secrets.CLAWHUB_TOKEN }}
-        run: clawhub login --token $CLAWHUB_TOKEN
+        run: |
+          which clawhub || echo "clawhub not found in PATH"
+          clawhub login --token $CLAWHUB_TOKEN
       - name: Prepare dist folder
         run: |
           rm -rf dist
