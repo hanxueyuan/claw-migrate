@@ -1,17 +1,18 @@
 {
   "name": "claw-migrate",
   "displayName": "claw-migrate",
-  "version": "2.7.7",
-  "description": "OpenClaw migration instructions - no code, just clear guidance",
+  "version": "2.7.8",
+  "description": "OpenClaw backup, restore, share, discover instructions - four clear paths",
   "author": "Han Xueyuan <xueyuan_han@163.com>",
   "license": "MIT",
   "homepage": "https://github.com/hanxueyuan/claw-migrate",
   "repository": "https://github.com/hanxueyuan/claw-migrate",
   "main": "src/index.js",
   "changelog": [
-    "Removed all code, pure instructions now",
-    "Clear checklist of what to backup/restore",
-    "Simple copy commands, no complex tooling",
-    "Security tips and common mistakes included"
+    "Restructured into 4 clear paths: Backup, Restore, Share, Discover",
+    "Added ClawTalent integration instructions (manual + API)",
+    "Detailed what to share vs not share",
+    "Security checklist for sensitive files",
+    "Quick reference commands for each path"
   ]
 }

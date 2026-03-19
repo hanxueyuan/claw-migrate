@@ -1,84 +1,88 @@
-# claw-migrate - OpenClaw Migration Instructions
+# claw-migrate - OpenClaw Migration & Sharing Guide
 
-> 🔄 **No code needed** - Just clear instructions for backup and restore
+> 🔄 **Four paths**: Backup · Restore · Share · Discover
 
 [![Version](https://img.shields.io/github/package-json/v/hanxueyuan/claw-migrate)](https://github.com/hanxueyuan/claw-migrate)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 📖 What Is This?
+## 🎯 What Is This?
 
-claw-migrate is **not a software tool**. It's a **set of clear instructions** for backing up and restoring your OpenClaw configuration.
+claw-migrate provides **clear instructions** for four migration paths:
 
-**Think of it as:**
-- 📋 A checklist of what to backup
-- 🗺️ A map of where files go
-- 📝 A guide of what to modify
+| Path | What It Does |
+|------|-------------|
+| **📁 Backup** | Save your config locally or to GitHub |
+| **🔄 Restore** | Recover config on new machine |
+| **📤 Share** | Upload to ClawTalent platform |
+| **🔍 Discover** | Find and deploy others' configs |
 
-**No installation needed. No commands to run. Just follow the instructions.**
+**No installation needed. Just follow the instructions.**
 
 ---
 
-## 🎯 Quick Guide
+## 🚀 Quick Start
 
-### What to Backup
-
-```
-✅ AGENTS.md, SOUL.md, TOOLS.md, HEARTBEAT.md
-✅ memory/, .learnings/, skills/
-⚠️ USER.md (remove phone/email first)
-⚠️ openclaw.json (remove API keys first)
-❌ .env, credentials/, identity/ (never backup)
-```
-
-### How to Backup
+### I Want to Backup
 
 ```bash
-# Simple copy
-mkdir ~/openclaw-backup
-cp /workspace/projects/workspace/*.md ~/openclaw-backup/
-cp -r /workspace/projects/workspace/memory/ ~/openclaw-backup/
+# See: SKILL.md → Path 1: Backup
+# Quick command:
+tar -czf backup.tar.gz -C /workspace/projects/workspace AGENTS.md SOUL.md memory/ .learnings/ skills/
 ```
 
-### How to Restore
+### I Want to Restore
 
 ```bash
-# Copy back
-cp ~/openclaw-backup/*.md /workspace/projects/workspace/
-cp -r ~/openclaw-backup/memory/ /workspace/projects/workspace/
+# See: SKILL.md → Path 2: Restore
+# Quick command:
+tar -xzf backup.tar.gz -C /workspace/projects/workspace/
+```
 
-# Restart
-openclaw gateway restart
+### I Want to Share to ClawTalent
+
+```bash
+# See: SKILL.md → Path 3: Share
+# You need: ClawTalent account + API token
+# Steps: Prepare → Sanitize → Upload → Get ID
+```
+
+### I Want to Discover Configs
+
+```bash
+# See: SKILL.md → Path 4: Discover
+# Browse: https://clawtalent.shop
+# Or use API: curl "https://clawtalent.shop/api/search?q=multi-agent"
 ```
 
 ---
 
 ## 📋 Full Instructions
 
-See **[SKILL.md](SKILL.md)** for complete instructions including:
-- Detailed backup checklist
-- Step-by-step migration guide
-- What to sanitize before sharing
-- Common mistakes to avoid
-- Troubleshooting tips
+See **[SKILL.md](SKILL.md)** for complete guides including:
+- Detailed backup/restore checklists
+- ClawTalent upload instructions (manual + API)
+- Discovery and deployment steps
+- Security best practices
+- Quick reference commands
 
 ---
 
 ## 🔐 Security Tips
 
-1. **Use private repos** - Never backup to public GitHub repos
-2. **Remove sensitive info** - Phone numbers, emails, API keys
-3. **Review before commit** - Always check what you're uploading
-4. **Re-pair after restore** - Channels need re-authentication
+1. **Never share** `.env`, `credentials/`, `identity/`
+2. **Always sanitize** phone numbers, emails, API keys
+3. **Use private repos** for personal backups
+4. **Re-pair channels** after restore
 
 ---
 
 ## 🌐 Links
 
-- **[Full Instructions](SKILL.md)** - Complete guide
-- **[GitHub](https://github.com/hanxueyuan/claw-migrate)** - Source
-- **[ClawTalent](https://clawtalent.shop)** - Share configs
+- **[Full Instructions](SKILL.md)** - All four paths detailed
+- **[ClawTalent](https://clawtalent.shop)** - Share & discover configs
+- **[GitHub](https://github.com/hanxueyuan/claw-migrate)** - Source & examples
 
 ---
 

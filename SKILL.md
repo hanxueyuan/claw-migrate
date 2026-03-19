@@ -1,102 +1,75 @@
 ---
 name: claw-migrate
-description: OpenClaw workspace backup & restore instructions - no code, just clear guidance
+description: OpenClaw workspace backup, restore, share, and discover instructions
 homepage: https://github.com/hanxueyuan/claw-migrate
 metadata:
   {"openclaw":{"emoji":"🔄","requires":{"bins":[],"env":[]},"primaryEnv":""}}
 ---
 
-# claw-migrate - OpenClaw Migration Instructions
+# claw-migrate - OpenClaw Migration & Sharing Guide
 
-> **No code needed** - Just follow these clear instructions for backup and restore
-
----
-
-## 🎯 What This Skill Does
-
-This skill **guides you** through backing up and restoring your OpenClaw configuration.
-
-**It helps you:**
-- 📁 Identify what to backup
-- 📂 Know where to restore
-- ✏️ Understand what to modify
-- 🚫 Avoid breaking machine-specific settings
+> **Four paths**: Backup · Restore · Share to ClawTalent · Discover from ClawTalent
 
 ---
 
-## 📋 What to Backup
+## 🎯 Choose Your Path
 
-### ✅ Always Backup These
-
-| File/Folder | Why | Priority |
-|-------------|-----|----------|
-| `workspace/AGENTS.md` | Team configuration | 🔴 Critical |
-| `workspace/SOUL.md` | AI personality | 🔴 Critical |
-| `workspace/TOOLS.md` | Tool notes | 🔴 Critical |
-| `workspace/HEARTBEAT.md` | Scheduled tasks | 🔴 Critical |
-| `workspace/memory/` | Memory database | 🔴 Critical |
-| `workspace/.learnings/` | Learning records | 🟡 Important |
-| `workspace/skills/` | Custom skills | 🟡 Important |
-
-### ⚠️ Review Before Backup
-
-| File/Folder | What to Do |
-|-------------|------------|
-| `workspace/USER.md` | Remove phone numbers and emails |
-| `workspace/IDENTITY.md` | Remove real name and contact info |
-| `workspace/openclaw.json` | Remove API keys, keep structure |
-| `workspace/feishu/` | Remove pairing info, keep app ID |
-
-### ❌ Do NOT Backup
-
-| File/Folder | Why |
-|-------------|-----|
-| `workspace/.env` | Contains secrets |
-| `workspace/credentials/` | Auth tokens |
-| `workspace/identity/` | Device tokens |
-| `workspace/logs/` | Log files, too large |
-| `workspace/browser/` | Browser data, too large |
-| `workspace/agents/*/sessions/` | Session history, too large |
+| Path | When to Use | What You Need |
+|------|-------------|---------------|
+| **📁 Backup** | Save your config locally or to GitHub | GitHub account (optional) |
+| **🔄 Restore** | Recover config on new machine | Backup files or GitHub repo |
+| **📤 Share** | Upload to ClawTalent platform | ClawTalent account + token |
+| **🔍 Discover** | Find and deploy others' configs | ClawTalent account |
 
 ---
 
-## 🚀 How to Backup
+## Path 1: 📁 Backup
 
-### Method 1: Simple Copy
+### What to Backup
+
+| Priority | Files/Folders | Why |
+|----------|---------------|-----|
+| 🔴 **Critical** | `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `HEARTBEAT.md` | Team & AI config |
+| 🔴 **Critical** | `memory/` | Memory database |
+| 🟡 **Important** | `.learnings/`, `skills/` | Learnings & custom skills |
+| ⚪ **Optional** | `docs/`, `scripts/`, `templates/` | Project files |
+
+### What NOT to Backup
+
+| Files | Why |
+|-------|-----|
+| `.env` | Contains API secrets |
+| `credentials/` | Auth tokens |
+| `identity/` | Device tokens |
+| `feishu/*.json` | Session info |
+| `logs/`, `browser/` | Too large |
+
+### How to Backup
+
+#### Option A: Local Backup
 
 ```bash
 # 1. Create backup folder
-mkdir -p ~/openclaw-backup
+mkdir -p ~/openclaw-backup-$(date +%Y-%m-%d)
 
 # 2. Copy critical files
 cp /workspace/projects/workspace/AGENTS.md ~/openclaw-backup/
 cp /workspace/projects/workspace/SOUL.md ~/openclaw-backup/
-cp /workspace/projects/workspace/TOOLS.md ~/openclaw-backup/
-cp /workspace/projects/workspace/HEARTBEAT.md ~/openclaw-backup/
 cp -r /workspace/projects/workspace/memory/ ~/openclaw-backup/
 cp -r /workspace/projects/workspace/.learnings/ ~/openclaw-backup/
 cp -r /workspace/projects/workspace/skills/ ~/openclaw-backup/
 
-# 3. Review and sanitize
-# Edit USER.md to remove phone/email
-# Edit IDENTITY.md to remove real name
-# Edit openclaw.json to remove API keys
-
-# 4. Optional: Upload to GitHub
-cd ~/openclaw-backup
-git init
-git add -A
-git commit -m "OpenClaw backup $(date +%Y-%m-%d)"
-# Push to your private repo
+# 3. Compress (optional)
+tar -czf openclaw-backup.tar.gz -C ~/openclaw-backup/ .
 ```
 
-### Method 2: GitHub Backup
+#### Option B: GitHub Backup
 
 ```bash
 # 1. Create private repo on GitHub
 # Go to github.com/new
 # Name: openclaw-backup
-# Set to Private
+# Set to: Private ✓
 
 # 2. Clone and copy
 git clone https://github.com/YOUR_USERNAME/openclaw-backup.git /tmp/backup
@@ -105,11 +78,11 @@ cp -r /workspace/projects/workspace/memory/ /tmp/backup/
 cp -r /workspace/projects/workspace/.learnings/ /tmp/backup/
 cp -r /workspace/projects/workspace/skills/ /tmp/backup/
 
-# 3. Review before commit
+# 3. Review before commit (remove sensitive info)
 cd /tmp/backup
-# Check for sensitive info
-grep -r "1[3-9][0-9]{9}" .  # Find phone numbers
-grep -r "@" . | grep -v ".md"  # Find emails
+# Edit USER.md - remove phone/email
+# Edit IDENTITY.md - remove real name
+# Edit openclaw.json - remove API keys
 
 # 4. Commit and push
 git add -A
@@ -119,185 +92,308 @@ git push origin main
 
 ---
 
-## 🔄 How to Restore
+## Path 2: 🔄 Restore
 
-### On New Machine
+### Where to Restore From
+
+| Source | When to Use |
+|--------|-------------|
+| **Local backup** | Quick restore on same machine |
+| **GitHub repo** | Restore on new machine |
+| **ClawTalent** | Deploy shared configurations |
+
+### Where to Restore To
+
+```
+Target: /workspace/projects/workspace/
+```
+
+### How to Restore
+
+#### From Local Backup
 
 ```bash
-# 1. Install OpenClaw first
-# Follow https://github.com/openclaw/openclaw installation guide
+# 1. Extract backup
+tar -xzf openclaw-backup.tar.gz -C /workspace/projects/workspace/
 
-# 2. Download backup
+# Or copy manually
+cp ~/openclaw-backup/*.md /workspace/projects/workspace/
+cp -r ~/openclaw-backup/memory/ /workspace/projects/workspace/
+cp -r ~/openclaw-backup/.learnings/ /workspace/projects/workspace/
+cp -r ~/openclaw-backup/skills/ /workspace/projects/workspace/
+
+# 2. Update machine-specific configs
+# Edit openclaw.json with new paths if needed
+
+# 3. Restart OpenClaw
+openclaw gateway restart
+```
+
+#### From GitHub
+
+```bash
+# 1. Clone backup repo
 git clone https://github.com/YOUR_USERNAME/openclaw-backup.git /tmp/restore
 
-# 3. Copy to workspace
-cp /tmp/restore/AGENTS.md /workspace/projects/workspace/
-cp /tmp/restore/SOUL.md /workspace/projects/workspace/
-cp /tmp/restore/TOOLS.md /workspace/projects/workspace/
-cp /tmp/restore/HEARTBEAT.md /workspace/projects/workspace/
+# 2. Copy to workspace
+cp /tmp/restore/*.md /workspace/projects/workspace/
 cp -r /tmp/restore/memory/ /workspace/projects/workspace/
 cp -r /tmp/restore/.learnings/ /workspace/projects/workspace/
 cp -r /tmp/restore/skills/ /workspace/projects/workspace/
 
-# 4. Update machine-specific configs
-# Edit openclaw.json with new paths if needed
-# Re-pair channels (Feishu, Telegram, etc.)
+# 3. Re-pair channels
+openclaw channels login --channel feishu
 
-# 5. Restart OpenClaw
+# 4. Restart
 openclaw gateway restart
 ```
 
-### Verify Restoration
+#### Verify Restoration
 
 ```bash
-# Check OpenClaw status
+# Check status
 openclaw gateway status
 
-# Check skills are installed
+# Check skills
 openclaw skills list
 
-# Check memory is accessible
+# Check memory
 openclaw memory search "test"
-
-# Check team configuration
-cat /workspace/projects/workspace/AGENTS.md
 ```
 
 ---
 
-## 🔐 What to Modify
+## Path 3: 📤 Share to ClawTalent
 
-### Before Sharing/Backup
+### What You Need
 
-| File | Remove/Replace | Keep |
-|------|---------------|------|
-| `USER.md` | Phone: `${YOUR_PHONE}`<br>Email: `${YOUR_EMAIL}` | Name, timezone, preferences |
-| `IDENTITY.md` | Name: `${YOUR_NAME}`<br>Contact: `${YOUR_CONTACT}` | Role, capabilities |
-| `openclaw.json` | `"apiKey": "${API_KEY}"` | Structure, model configs |
-| `feishu/*.json` | Session tokens, pairing codes | App ID (public) |
+| Requirement | How to Get |
+|-------------|------------|
+| **ClawTalent Account** | Sign up at https://clawtalent.shop |
+| **API Token** | Dashboard → Settings → Generate Token |
+| **Clean Config** | Remove sensitive info first |
 
-### After Restore
+### What to Share
 
-| File | What to Update |
+| ✅ Share | ❌ Don't Share |
+|----------|---------------|
+| `AGENTS.md` | `.env` |
+| `SOUL.md` | `credentials/` |
+| `TOOLS.md` | `identity/` |
+| `skills/` (your custom skills) | `feishu/*.json` |
+| `HEARTBEAT.md` | `logs/` |
+
+### What to Sanitize First
+
+| File | Remove/Replace |
 |------|---------------|
-| `openclaw.json` | Add your API keys back |
-| `feishu/` | Re-pair your Feishu account |
-| `USER.md` | Add your real phone/email back |
-| `IDENTITY.md` | Add your real name back |
+| `USER.md` | Phone → `${YOUR_PHONE}`<br>Email → `${YOUR_EMAIL}` |
+| `IDENTITY.md` | Name → `${YOUR_NAME}` |
+| `openclaw.json` | API keys → `${API_KEY}` |
+
+### How to Share
+
+#### Option A: Via ClawTalent Website (Manual)
+
+```bash
+# 1. Prepare share package
+mkdir /tmp/share-package
+cp AGENTS.md SOUL.md TOOLS.md HEARTBEAT.md /tmp/share-package/
+cp -r skills/ /tmp/share-package/
+cp -r memory/ /tmp/share-package/
+
+# 2. Sanitize
+# Edit files to remove sensitive info
+
+# 3. Compress
+cd /tmp/share-package
+tar -czf share-package.tar.gz .
+
+# 4. Upload via website
+# Go to https://clawtalent.shop/share
+# Upload share-package.tar.gz
+# Fill in: name, description, tags
+# Submit
+```
+
+#### Option B: Via API (Automated)
+
+```bash
+# 1. Get your ClawTalent token
+# Dashboard → Settings → Generate Token
+CLAWTALENT_TOKEN="your-token-here"
+
+# 2. Prepare package (same as above)
+mkdir /tmp/share-package
+# ... copy and sanitize files ...
+tar -czf share-package.tar.gz -C /tmp/share-package .
+
+# 3. Upload via API
+curl -X POST https://clawtalent.shop/api/configurations \
+  -H "Authorization: Bearer $CLAWTALENT_TOKEN" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@share-package.tar.gz" \
+  -F "name=My OpenClaw Config" \
+  -F "description=My custom OpenClaw configuration" \
+  -F "tags=multi-agent,backup"
+
+# 4. Get back configuration ID
+# Response: {"id": "CT-0001", "url": "https://clawtalent.shop/c/CT-0001"}
+```
+
+### After Sharing
+
+- You'll receive a **Configuration ID** (e.g., `CT-0001`)
+- Share this ID with others
+- They can deploy using: `openclaw skill run claw-migrate deploy CT-0001`
 
 ---
 
-## 📝 Quick Reference
+## Path 4: 🔍 Discover on ClawTalent
 
-### Backup Command (One-liner)
+### What You Can Find
 
-```bash
-tar -czf openclaw-backup.tar.gz -C /workspace/projects/workspace AGENTS.md SOUL.md TOOLS.md HEARTBEAT.md memory/ .learnings/ skills/
+| Type | Examples |
+|------|----------|
+| **Agent Configs** | Multi-agent teams, specialized agents |
+| **Skills** | Custom skills for specific tasks |
+| **Templates** | Pre-configured setups |
+
+### How to Search
+
+#### Via Website
+
+```
+1. Go to https://clawtalent.shop
+2. Use search bar or browse categories
+3. Filter by tags: multi-agent, finance, tech, etc.
+4. Click on configuration to view details
+5. Click "Deploy" to get Configuration ID
 ```
 
-### Restore Command (One-liner)
+#### Via API
 
 ```bash
-tar -xzf openclaw-backup.tar.gz -C /workspace/projects/workspace/
+# Search by keyword
+curl "https://clawtalent.shop/api/search?q=multi-agent"
+
+# Search by tags
+curl "https://clawtalent.shop/api/search?tags=finance,stock"
+
+# Get configuration details
+curl "https://clawtalent.shop/api/configurations/CT-0001"
 ```
 
-### Verify Backup
+### How to Deploy
+
+#### Get Configuration
 
 ```bash
-# List backup contents
-tar -tzf openclaw-backup.tar.gz
+# Method 1: Download from website
+# Go to configuration page → Click "Download"
+# Extract to /tmp/deploy/
 
-# Check size
-du -sh openclaw-backup.tar.gz
+# Method 2: Via API
+curl -o config.tar.gz "https://clawtalent.shop/api/configurations/CT-0001/download"
+tar -xzf config.tar.gz -C /tmp/deploy/
+```
+
+#### Deploy to Workspace
+
+```bash
+# 1. Review contents first
+ls -la /tmp/deploy/
+cat /tmp/deploy/README.md  # If available
+
+# 2. Copy to workspace
+cp /tmp/deploy/*.md /workspace/projects/workspace/
+cp -r /tmp/deploy/memory/ /workspace/projects/workspace/
+cp -r /tmp/deploy/skills/ /workspace/projects/workspace/
+
+# 3. Update your settings
+# Edit openclaw.json with your API keys
+# Re-pair your channels
+
+# 4. Restart
+openclaw gateway restart
 ```
 
 ---
 
-## ⚠️ Common Mistakes to Avoid
+## 🔐 Security Best Practices
 
-### ❌ Mistake 1: Backup Everything
+### Before Sharing
 
-**Wrong:**
-```bash
-cp -r /workspace/projects/workspace/* ~/backup/  # Includes .env, credentials, etc.
+- ✅ Remove all phone numbers and emails
+- ✅ Remove API keys and tokens
+- ✅ Remove device/session info
+- ✅ Use private repos for personal backups
+
+### Token Handling
+
+| Token Type | How to Store |
+|------------|--------------|
+| **GitHub Token** | Environment variable: `export GITHUB_TOKEN=xxx` |
+| **ClawTalent Token** | Use only for upload, don't share |
+| **API Keys** | Never include in shared configs |
+
+### Sensitive Files Checklist
+
+Before any backup/share, verify these are **NOT** included:
+
 ```
-
-**Right:**
-```bash
-# Only copy allowed files (see checklist above)
-cp AGENTS.md SOUL.md ~/backup/
-```
-
-### ❌ Mistake 2: Forget to Sanitize
-
-**Wrong:**
-```bash
-# Backup with phone number in USER.md
-# Backup with API key in openclaw.json
-```
-
-**Right:**
-```bash
-# Edit before backup
-nano USER.md  # Remove phone
-nano openclaw.json  # Remove API key
-```
-
-### ❌ Mistake 3: Overwrite Machine-Specific Settings
-
-**Wrong:**
-```bash
-# Copy openclaw.json directly (overwrites paths, tokens)
-cp /tmp/restore/openclaw.json /workspace/projects/workspace/
-```
-
-**Right:**
-```bash
-# Review and update paths manually
-nano /workspace/projects/workspace/openclaw.json
+❌ .env
+❌ credentials/
+❌ identity/
+❌ feishu/*.json (except app ID)
+❌ telegram/*.json
+❌ Any file with "token", "secret", "key" in content
 ```
 
 ---
 
-## 🆘 Troubleshooting
+## 🆘 Quick Reference
 
-### "Files missing after restore"
+### Backup One-liner
 
-**Check:**
 ```bash
-# List what was backed up
-tar -tzf openclaw-backup.tar.gz
-
-# Compare with what should be there
-ls -la /workspace/projects/workspace/*.md
+tar -czf backup.tar.gz -C /workspace/projects/workspace AGENTS.md SOUL.md memory/ .learnings/ skills/
 ```
 
-### "API keys not working"
+### Restore One-liner
 
-**Solution:**
 ```bash
-# Set environment variables
-export BAILIAN_API_KEY="your-key-here"
-
-# Or edit openclaw.json
-nano /workspace/projects/workspace/openclaw.json
+tar -xzf backup.tar.gz -C /workspace/projects/workspace/
 ```
 
-### "Feishu not connected"
+### Share Package
 
-**Solution:**
 ```bash
-# Re-pair Feishu
-openclaw channels login --channel feishu
+# Prepare, sanitize, then:
+tar -czf share.tar.gz -C /tmp/share-package .
+curl -X POST https://clawtalent.shop/api/configurations \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "file=@share.tar.gz" -F "name=My Config"
+```
+
+### Discover & Deploy
+
+```bash
+# Search
+curl "https://clawtalent.shop/api/search?q=multi-agent"
+
+# Deploy
+curl -o config.tar.gz "https://clawtalent.shop/api/configurations/CT-0001/download"
+tar -xzf config.tar.gz -C /workspace/projects/workspace/
 ```
 
 ---
 
 ## 🌐 Resources
 
-- **[GitHub Repo](https://github.com/hanxueyuan/claw-migrate)** - Example backup scripts
-- **[OpenClaw Docs](https://github.com/openclaw/openclaw)** - Official documentation
 - **[ClawTalent](https://clawtalent.shop)** - Share and discover configs
+- **[GitHub Repo](https://github.com/hanxueyuan/claw-migrate)** - Examples and scripts
+- **[OpenClaw Docs](https://github.com/openclaw/openclaw)** - Official documentation
 
 ---
 
