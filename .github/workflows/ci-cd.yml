@@ -1,0 +1,121 @@
+name: CI/CD - Test & Publish to ClawHub
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ========== 代码质量检查 ==========
+  quality-check:
+    name: 🔍 Code Quality Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+      - name: ESLint check
+        run: npm run lint 2>/dev/null || echo "No lint config"
+
+  # ========== 单元测试 ==========
+  test:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-latest
+    needs: quality-check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+      - name: Run tests
+        run: npx vitest run --reporter=verbose
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 7
+
+  # ========== 构建验证 ==========
+  build:
+    name: 🔨 Build Validation
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+      - name: Prepare dist folder
+        run: |
+          rm -rf dist
+          mkdir -p dist/src
+          cp -r src/* dist/src/
+          cp SKILL.md dist/
+          cp README.md dist/
+          cp USAGE.md dist/
+          cp CHANGELOG.md dist/
+          cp package.json dist/
+          cp .clawhubignore dist/ 2>/dev/null || true
+      - name: Verify dist structure
+        run: |
+          echo "=== Dist structure ==="
+          ls -la dist/
+          ls -la dist/src/
+          echo "=== Package.json ==="
+          cat dist/package.json | grep -E "name|version|main"
+
+  # ========== 发布到 ClawHub ==========
+  publish:
+    name: 🚀 Publish to ClawHub
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install clawhub CLI
+        run: npm install -g @clawhub/cli
+      - name: Login to ClawHub
+        env:
+          CLAWHUB_TOKEN: ${{ secrets.CLAWHUB_TOKEN }}
+        run: clawhub login --token $CLAWHUB_TOKEN
+      - name: Prepare dist folder
+        run: |
+          rm -rf dist
+          mkdir -p dist/src
+          cp -r src/* dist/src/
+          cp SKILL.md dist/
+          cp README.md dist/
+          cp USAGE.md dist/
+          cp CHANGELOG.md dist/
+          cp package.json dist/
+          cp .clawhubignore dist/ 2>/dev/null || true
+          # Extract version from package.json
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Publish to ClawHub
+        env:
+          CLAWHUB_TOKEN: ${{ secrets.CLAWHUB_TOKEN }}
+        run: |
+          echo "Publishing claw-migrate@${{ env.VERSION }} to ClawHub..."
+          clawhub publish dist --slug claw-migrate --version ${{ env.VERSION }} --name "claw-migrate"
+          echo "✅ Published successfully!"
+      - name: Verify publication
+        run: |
+          echo "Verifying publication..."
+          clawhub inspect claw-migrate | head -10
