@@ -1,7 +1,7 @@
 {
   "name": "claw-migrate",
   "displayName": "claw-migrate",
-  "version": "2.7.5",
+  "version": "2.7.6",
   "description": "OpenClaw workspace backup & restore tool - simple, safe, controlled",
   "author": "Han Xueyuan <xueyuan_han@163.com>",
   "license": "MIT",
@@ -9,9 +9,9 @@
   "repository": "https://github.com/hanxueyuan/claw-migrate",
   "main": "src/index.js",
   "changelog": [
-    "Updated SKILL.md and README.md with clearer Chinese documentation",
+    "Rewrote SKILL.md and README.md in English for i18n support",
     "Better organization of backup categories",
-    "Added more usage examples",
+    "Added 7 usage scenario examples",
     "Clarified security best practices"
   ]
 }

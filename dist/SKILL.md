@@ -6,303 +6,303 @@ metadata:
   {"openclaw":{"emoji":"🔄","requires":{"bins":["node","git"],"env":["GITHUB_TOKEN"]},"primaryEnv":"GITHUB_TOKEN"}}
 ---
 
-# claw-migrate - OpenClaw 配置备份与恢复
+# claw-migrate - OpenClaw Workspace Backup & Restore
 
-> **你的数据，你做主** - 简单、安全、可控的备份恢复工具
-
----
-
-## 🎯 这个工具能做什么？
-
-**使用场景**：
-- 🔄 OpenClaw 经常挂掉，需要迁移配置
-- 💾 定期备份，防止数据丢失
-- 🚀 快速恢复，减少停机时间
-- 📤 分享你的配置给其他人
-- 📥 发现和使用别人分享的配置
-
-**核心功能**：
-| 功能 | 说明 | 命令 |
-|------|------|------|
-| **🔵 备份** | 备份配置到 GitHub 私人仓库 | `openclaw skill run claw-migrate backup` |
-| **🟢 恢复** | 从 GitHub 恢复到本地 | `openclaw skill run claw-migrate restore` |
-| **🟣 分享** | 分享到 ClawTalent 平台 | `openclaw skill run claw-migrate share` |
-| **🟠 部署** | 从 ClawTalent 部署配置 | `openclaw skill run claw-migrate deploy CT-1001` |
-| **🔍 搜索** | 搜索 ClawTalent 上的配置 | `openclaw skill run claw-migrate search "multi-agent"` |
-| **📋 配置** | 管理备份设置 | `openclaw skill run claw-migrate config` |
+> **Your data, your rules** - Simple, safe, and controlled backup tool
 
 ---
 
-## 🚀 快速开始
+## 🎯 What Does This Tool Do?
 
-### 1. 安装技能
+**Use Cases**:
+- 🔄 OpenClaw crashes frequently, need to migrate configurations
+- 💾 Regular backups to prevent data loss
+- 🚀 Quick recovery to minimize downtime
+- 📤 Share your configurations with others
+- 📥 Discover and use configurations shared by others
+
+**Core Features**:
+| Feature | Description | Command |
+|---------|-------------|---------|
+| **🔵 Backup** | Backup configs to a private GitHub repo | `openclaw skill run claw-migrate backup` |
+| **🟢 Restore** | Restore configs from GitHub to local | `openclaw skill run claw-migrate restore` |
+| **🟣 Share** | Share to ClawTalent platform | `openclaw skill run claw-migrate share` |
+| **🟠 Deploy** | Deploy from ClawTalent | `openclaw skill run claw-migrate deploy CT-1001` |
+| **🔍 Search** | Search ClawTalent configurations | `openclaw skill run claw-migrate search "multi-agent"` |
+| **📋 Config** | Manage backup settings | `openclaw skill run claw-migrate config` |
+
+---
+
+## 🚀 Quick Start
+
+### 1. Install the Skill
 
 ```bash
 openclaw skill install claw-migrate
 ```
 
-### 2. 配置向导
+### 2. Setup Wizard
 
 ```bash
 openclaw skill run claw-migrate setup
 ```
 
-向导会引导你完成：
-1. 输入 GitHub 仓库（格式：`owner/repo`）
-2. 选择认证方式（环境变量或手动输入 Token）
-3. **选择要备份的内容**（20+ 分类，完全由你决定）
-4. 确认配置
+The wizard will guide you through:
+1. Enter your GitHub repository (format: `owner/repo`)
+2. Choose authentication method (environment variable or manual token)
+3. **Select what to back up** (20+ categories, entirely your choice)
+4. Confirm configuration
 
-### 3. 备份
+### 3. Backup
 
 ```bash
 openclaw skill run claw-migrate backup
 ```
 
-### 4. 恢复（新机器）
+### 4. Restore (New Machine)
 
 ```bash
-# 在新机器上安装技能后
+# After installing the skill on a new machine
 openclaw skill run claw-migrate setup
-# 选择"恢复配置"，输入仓库信息
+# Choose "Restore configuration", enter repo info
 openclaw skill run claw-migrate restore
 ```
 
 ---
 
-## 📦 备份内容分类
+## 📦 Backup Categories
 
-### 🔵🟢🟣🟡 核心配置（推荐备份）
+### 🔵🟢🟣🟡 Core Configuration (Recommended)
 
-| 分类 | 包含文件 | 说明 |
-|------|---------|------|
-| 🔵 **核心配置** | `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`, `TOOLS.md`, `HEARTBEAT.md` | AI 人格和团队定义 |
-| 🟢 **技能文件** | `skills/` | 所有自定义技能 |
-| 🟣 **记忆数据** | `MEMORY.md`, `memory/` | 长期记忆和记忆索引 |
-| 🟡 **学习记录** | `.learnings/` | 错误记录和学习心得 |
+| Category | Files Included | Description |
+|----------|---------------|-------------|
+| 🔵 **Core Config** | `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`, `TOOLS.md`, `HEARTBEAT.md` | AI persona and team definitions |
+| 🟢 **Skills** | `skills/` | All custom skills |
+| 🟣 **Memory Data** | `MEMORY.md`, `memory/` | Long-term memory and memory index |
+| 🟡 **Learning Records** | `.learnings/` | Error logs and learning notes |
 
-### ⚪ 可选配置
+### ⚪ Optional Configuration
 
-| 分类 | 包含文件 | 说明 |
-|------|---------|------|
-| ⚪ **定时任务** | `cron/` | 定时任务配置 |
-| ⚪ **项目文档** | `docs/` | 项目文档和说明 |
-| ⚪ **脚本工具** | `scripts/` | 脚本工具 |
-| ⚪ **模板文件** | `templates/` | 模板文件 |
-| ⚪ **测试文件** | `tests/` | 测试用例和脚本 |
-| ⚪ **GitHub 配置** | `.github/` | GitHub 相关配置 |
+| Category | Files Included | Description |
+|----------|---------------|-------------|
+| ⚪ **Cron Jobs** | `cron/` | Scheduled task configs |
+| ⚪ **Project Docs** | `docs/` | Project documentation |
+| ⚪ **Scripts** | `scripts/` | Script tools |
+| ⚪ **Templates** | `templates/` | Template files |
+| ⚪ **Tests** | `tests/` | Test cases and scripts |
+| ⚪ **GitHub Config** | `.github/` | GitHub-related configs |
 
-### ⚠️ 机器特定配置（按需选择）
+### ⚠️ Machine-Specific Configuration (Select as Needed)
 
-| 分类 | 包含文件 | 说明 |
-|------|---------|------|
-| ⚠️ **OpenClaw 配置** | `openclaw.json` | 包含机器特定路径，多设备同步时可能需要修改 |
-| ⚠️ **飞书配置** | `feishu/` | 包含配对信息，多设备同步时可能需要重新配对 |
-| ⚠️ **Telegram 配置** | `telegram/` | 包含会话信息 |
-| ⚠️ **其他 Channel** | `discord/`, `whatsapp/`, `signal/` | 其他 Channel 配置 |
-| ⚠️ **浏览器数据** | `browser/` | 浏览器用户数据，体积较大 |
-| ⚠️ **会话历史** | `agents/*/sessions/` | 会话记录，体积较大 |
-| ⚠️ **日志文件** | `logs/` | 日志文件，体积较大 |
+| Category | Files Included | Description |
+|----------|---------------|-------------|
+| ⚠️ **OpenClaw Config** | `openclaw.json` | Contains machine-specific paths; may need editing for multi-device sync |
+| ⚠️ **Feishu Config** | `feishu/` | Contains pairing info; may need re-pairing for multi-device sync |
+| ⚠️ **Telegram Config** | `telegram/` | Contains session info |
+| ⚠️ **Other Channels** | `discord/`, `whatsapp/`, `signal/` | Other channel configs |
+| ⚠️ **Browser Data** | `browser/` | Browser user data, may be large |
+| ⚠️ **Session History** | `agents/*/sessions/` | Session records, may be large |
+| ⚠️ **Log Files** | `logs/` | Log files, may be large |
 
-### 🔴 敏感信息（谨慎选择）
+### 🔴 Sensitive Information (Select with Caution)
 
-| 分类 | 包含文件 | 说明 |
-|------|---------|------|
-| 🔴 **环境配置** | `.env`, `.env.*` | API Key、Token 等，**仅建议备份到私人仓库** |
-| 🔴 **认证信息** | `credentials/` | 认证凭证，**仅建议备份到私人仓库** |
-| 🔴 **设备认证** | `identity/` | 设备 token，**仅建议备份到私人仓库** |
-
----
-
-## 🎯 快速选择方式
-
-配置向导提供多种快捷选择：
-
-| 命令 | 说明 |
-|------|------|
-| `a` | **全选**（包括敏感信息） |
-| `r` | **仅推荐**（核心配置） |
-| `s` | **标准**（推荐 + 可选，不含敏感） |
-| `1 2 3 5` | **手动选择**（输入编号） |
-| 回车 | **跳过**（不备份） |
+| Category | Files Included | Description |
+|----------|---------------|-------------|
+| 🔴 **Environment Config** | `.env`, `.env.*` | API keys, tokens, etc. **Only recommended for private repos** |
+| 🔴 **Credentials** | `credentials/` | Auth credentials. **Only recommended for private repos** |
+| 🔴 **Device Auth** | `identity/` | Device tokens. **Only recommended for private repos** |
 
 ---
 
-## 🔄 恢复策略
+## 🎯 Quick Selection Options
 
-| 文件类型 | 策略 | 说明 |
-|---------|------|------|
-| 核心配置 | **智能合并** | 保留本地自定义，合并远端更新 |
-| 技能文件 | **增量同步** | 只添加远端有、本地没有的技能 |
-| MEMORY.md | **合并** | 保留本地记忆，追加远端新记忆 |
-| .learnings/ | **追加去重** | 追加远端新记录，自动去重 |
-| 其他文件 | **覆盖** | 使用远端版本 |
+The setup wizard provides several shortcuts:
+
+| Command | Description |
+|---------|-------------|
+| `a` | **Select all** (including sensitive info) |
+| `r` | **Recommended only** (core config) |
+| `s` | **Standard** (recommended + optional, no sensitive) |
+| `1 2 3 5` | **Manual selection** (enter numbers) |
+| Enter | **Skip** (don't back up) |
 
 ---
 
-## 🔐 安全说明
+## 🔄 Restore Strategies
 
-### 私人仓库推荐
+| File Type | Strategy | Description |
+|-----------|----------|-------------|
+| Core Config | **Smart Merge** | Preserves local customizations, merges remote updates |
+| Skills | **Incremental Sync** | Only adds skills that exist remotely but not locally |
+| MEMORY.md | **Merge** | Preserves local memories, appends new remote memories |
+| .learnings/ | **Append & Dedup** | Appends new remote records, auto-deduplicates |
+| Other Files | **Overwrite** | Uses remote version |
 
-**强烈建议使用 GitHub Private Repository**
+---
+
+## 🔐 Security Notes
+
+### Private Repository Recommended
+
+**Strongly recommend using a GitHub Private Repository**
 
 ```bash
-# 创建私人仓库
+# Create a private repository
 gh repo create openclaw-backup --private
 ```
 
-### 敏感信息保护
+### Sensitive Information Protection
 
-- 🔴 选择备份敏感信息时，系统会二次确认
-- 🔴 仅建议备份到可信私人仓库
-- 🔴 定期检查和更新 Token 权限
+- 🔴 System will ask for confirmation when backing up sensitive info
+- 🔴 Only recommended for trusted private repositories
+- 🔴 Regularly review and update token permissions
 
-### Token 处理与存储
+### Token Handling & Storage
 
-**Token 可以三种方式存储：**
+**Token can be stored in three ways:**
 
-1. **环境变量**（推荐）- 在 shell 中设置 `GITHUB_TOKEN`
-   - 最安全，不持久化
+1. **Environment Variable** (Recommended) - Set `GITHUB_TOKEN` in your shell
+   - Most secure, no persistence
    - `export GITHUB_TOKEN=ghp_xxx`
 
-2. **配置文件**（方便）- Token 可能存储在 `~/.openclaw/claw-migrate/config.json`
-   - 方便重复使用
-   - 使用细粒度 Token，最小权限
+2. **Config File** (Convenient) - Token may be stored in `~/.openclaw/claw-migrate/config.json`
+   - Convenient for repeated use
+   - Use fine-grained tokens with minimal permissions
 
-3. **GitHub CLI**（备选）- 如果没有配置 Token，技能会尝试 `gh auth token`
-   - 使用已有的 GitHub CLI 认证
-   - 无需额外存储 Token
+3. **GitHub CLI** (Fallback) - Skill may try `gh auth token` if no token configured
+   - Uses your existing GitHub CLI authentication
+   - No additional token storage
 
-**最佳实践：**
-- 使用细粒度个人访问 Token，只需 `repo` 权限
-- 定期轮换 Token
-- 不要将 Token 提交到公开仓库
-- 在共享机器上，优先使用环境变量而非配置文件
+**Best Practices:**
+- Use fine-grained personal access tokens with `repo` scope only
+- Rotate tokens periodically
+- Never commit token to public repositories
+- For shared machines, prefer environment variable over config storage
 
 ---
 
-## ⚙️ 配置管理
+## ⚙️ Configuration Management
 
 ```bash
-# 启动配置向导
+# Start setup wizard
 openclaw skill run claw-migrate setup
 
-# 查看当前配置
+# View current configuration
 openclaw skill run claw-migrate config
 
-# 修改配置
+# Edit configuration
 openclaw skill run claw-migrate config --edit
 
-# 重置配置
+# Reset configuration
 openclaw skill run claw-migrate config --reset
 
-# 查看状态
+# View status
 openclaw skill run claw-migrate status
 ```
 
-**配置文件位置**：`~/.openclaw/claw-migrate/config.json`
+**Config File Location**: `~/.openclaw/claw-migrate/config.json`
 
 ---
 
-## 📝 使用示例
+## 📝 Usage Examples
 
-### 场景 1：新机器迁移配置
+### Scenario 1: Migrate to a New Machine
 
 ```bash
-# 1. 安装技能
+# 1. Install the skill
 openclaw skill install claw-migrate
 
-# 2. 配置向导（输入原仓库信息）
+# 2. Setup wizard (enter original repo info)
 openclaw skill run claw-migrate setup
 
-# 3. 恢复配置
+# 3. Restore configuration
 openclaw skill run claw-migrate restore
 ```
 
-### 场景 2：仅备份核心配置
+### Scenario 2: Back Up Core Config Only
 
 ```bash
-# 1. 启动配置向导
+# 1. Start setup wizard
 openclaw skill run claw-migrate setup
 
-# 2. 选择备份内容时输入：r（仅推荐）
-# 3. 执行备份
+# 2. When selecting backup content, enter: r (recommended only)
+# 3. Run backup
 openclaw skill run claw-migrate backup
 ```
 
-### 场景 3：完整备份（包括敏感信息）
+### Scenario 3: Full Backup (Including Sensitive Info)
 
 ```bash
-# 1. 启动配置向导
+# 1. Start setup wizard
 openclaw skill run claw-migrate setup
 
-# 2. 选择备份内容时输入：a（全选）
-# 3. 确认备份敏感信息
-# 4. 执行备份
+# 2. When selecting backup content, enter: a (select all)
+# 3. Confirm backing up sensitive info
+# 4. Run backup
 openclaw skill run claw-migrate backup
 ```
 
-### 场景 4：预览备份
+### Scenario 4: Preview Backup
 
 ```bash
-# 预览将备份的文件（不实际上传）
+# Preview files to be backed up (no actual upload)
 openclaw skill run claw-migrate backup --dry-run
 ```
 
-### 场景 5：分享到 ClawTalent
+### Scenario 5: Share to ClawTalent
 
 ```bash
-# 分享配置到 ClawTalent 平台
+# Share your configuration to ClawTalent platform
 openclaw skill run claw-migrate share
 
-# 预览模式
+# Dry-run mode (preview only)
 openclaw skill run claw-migrate share --dry-run
 ```
 
-### 场景 6：从 ClawTalent 部署
+### Scenario 6: Deploy from ClawTalent
 
 ```bash
-# 通过 ID 部署配置
+# Deploy a configuration by ID
 openclaw skill run claw-migrate deploy CT-1001
 
-# 自动确认部署
+# Deploy with auto-confirm
 openclaw skill run claw-migrate deploy CT-1001 --yes
 
-# 通过 URL 部署
+# Deploy from URL
 openclaw skill run claw-migrate deploy https://clawtalent.shop/config/CT-1001
 ```
 
-### 场景 7：搜索 ClawTalent
+### Scenario 7: Search ClawTalent
 
 ```bash
-# 按关键词搜索
+# Search by keyword
 openclaw skill run claw-migrate search "multi-agent"
 
-# 按标签筛选
+# Search with tags filter
 openclaw skill run claw-migrate search "home" --tags automation,iot
 
-# 限制结果数量
+# Limit results
 openclaw skill run claw-migrate search "finance" --limit 10
 ```
 
 ---
 
-## 🛠️ 故障排除
+## 🛠️ Troubleshooting
 
-| 错误 | 原因 | 解决方案 |
-|------|------|---------|
-| `404 Not Found` | 仓库不存在或无权限 | 检查仓库名称，确认 Token 权限 |
-| `401 Unauthorized` | Token 无效 | 重新生成 Token |
-| `Rate limit exceeded` | API 请求超限 | 等待后重试，或使用认证 Token |
-| `未找到配置文件` | 未运行 setup | 先运行 `openclaw skill run claw-migrate setup` |
+| Error | Cause | Solution |
+|-------|-------|----------|
+| `404 Not Found` | Repo doesn't exist or no access | Check repo name and token permissions |
+| `401 Unauthorized` | Invalid token | Regenerate token |
+| `Rate limit exceeded` | API rate limit hit | Wait and retry, or use an authenticated token |
+| `Config not found` | Setup not run | Run `openclaw skill run claw-migrate setup` first |
 
 ---
 
-## 🌐 生态系统
+## 🌐 Ecosystem
 
-- **[ClawTalent.shop](https://clawtalent.shop)** - OpenClaw Agent 市场
-- **[ClawHub](https://clawhub.com)** - 技能商店
-- **[OpenClaw](https://github.com/openclaw/openclaw)** - 框架文档
+- **[ClawTalent.shop](https://clawtalent.shop)** - OpenClaw Agent Marketplace
+- **[ClawHub](https://clawhub.com)** - Skill Store
+- **[OpenClaw](https://github.com/openclaw/openclaw)** - Framework Docs
 
 ---
 

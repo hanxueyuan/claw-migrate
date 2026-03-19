@@ -1,7 +1,7 @@
-# claw-migrate - OpenClaw 配置备份与恢复
+# claw-migrate - OpenClaw Workspace Backup & Restore
 
 > 🔄 OpenClaw workspace backup & restore tool  
-> **你的数据，你做主** - 简单、安全、可控
+> **Your data, your rules** - Simple, safe, controlled
 
 [![Version](https://img.shields.io/github/package-json/v/hanxueyuan/claw-migrate)](https://github.com/hanxueyuan/claw-migrate)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -9,59 +9,59 @@
 
 ---
 
-## 📖 简介
+## 📖 Introduction
 
-claw-migrate 是 OpenClaw 工作空间的备份与恢复工具，支持将配置备份到 GitHub 私人仓库，并从仓库恢复到本地。
+claw-migrate is a backup and restore tool for OpenClaw workspaces. It supports backing up configurations to a GitHub private repository and restoring them to local.
 
-**设计初衷**：
-- 🔄 OpenClaw 经常挂掉，需要迁移配置
-- 💾 定期备份，防止数据丢失
-- 🚀 快速恢复，减少停机时间
-- 📤 分享配置，方便协作
+**Design Goal**:
+- 🔄 OpenClaw crashes frequently, need to migrate configurations
+- 💾 Regular backups to prevent data loss
+- 🚀 Quick recovery to minimize downtime
+- 📤 Share configurations for collaboration
 
-**核心特点**：
-- ✅ **完全自主** - 20+ 备份分类，你自己决定备份什么
-- ✅ **智能恢复** - 支持合并、追加、增量同步等多种策略
-- ✅ **安全可靠** - 敏感信息二次确认，私人仓库保护
-- ✅ **简单易用** - 交互式向导，一键备份/恢复
-- ✅ **进度显示** - 实时进度条，耗时统计
-- ✅ **分享发现** - 支持分享到 ClawTalent 平台，发现他人配置
+**Core Features**:
+- ✅ **Fully Controlled** - 20+ backup categories, you decide what to back up
+- ✅ **Smart Restore** - Merge, append, incremental sync strategies
+- ✅ **Secure** - Sensitive info confirmation, private repo protection
+- ✅ **Easy to Use** - Interactive wizard, one-click backup/restore
+- ✅ **Progress Tracking** - Real-time progress bar, duration stats
+- ✅ **Share & Discover** - Share to ClawTalent platform, discover others' configs
 
 ---
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 1. 安装
+### 1. Install
 
 ```bash
 openclaw skill install claw-migrate
 ```
 
-### 2. 配置
+### 2. Configure
 
 ```bash
 openclaw skill run claw-migrate setup
 ```
 
-### 3. 备份
+### 3. Backup
 
 ```bash
 openclaw skill run claw-migrate backup
 ```
 
-### 4. 恢复
+### 4. Restore
 
 ```bash
 openclaw skill run claw-migrate restore
 ```
 
-### 5. 分享（可选）
+### 5. Share (Optional)
 
 ```bash
 openclaw skill run claw-migrate share
 ```
 
-### 6. 部署（可选）
+### 6. Deploy (Optional)
 
 ```bash
 openclaw skill run claw-migrate deploy CT-0001
@@ -69,74 +69,74 @@ openclaw skill run claw-migrate deploy CT-0001
 
 ---
 
-## 📦 备份内容
+## 📦 Backup Content
 
-### 核心配置（推荐）
-- 🔵 AGENTS.md, SOUL.md, IDENTITY.md 等
-- 🟢 skills/ 目录
+### Core Configuration (Recommended)
+- 🔵 AGENTS.md, SOUL.md, IDENTITY.md, etc.
+- 🟢 skills/ directory
 - 🟣 MEMORY.md
 - 🟡 .learnings/
 
-### 可选配置
+### Optional Configuration
 - ⚪ cron/, docs/, scripts/, templates/, tests/
 - ⚪ .github/
 
-### 机器特定（按需）
+### Machine-Specific (As Needed)
 - ⚠️ openclaw.json, feishu/, telegram/
 - ⚠️ discord/, whatsapp/, browser/, agents/*/sessions/
 
-### 敏感信息（谨慎）
+### Sensitive Information (Use Caution)
 - 🔴 .env, credentials/, identity/
 
 ---
 
-## 🔐 安全最佳实践
+## 🔐 Security Best Practices
 
-1. **使用私人仓库** - 始终备份到 GitHub 私人仓库
-2. **备份前检查** - 技能会显示所有文件，仔细检查
-3. **敏感文件** - .env、credentials 等仅备份到可信仓库
-4. **Token 存储** - 可使用环境变量或配置文件
-5. **谨慎分享** - 只分享你想让他人看到的配置
-
----
-
-## 🎯 常用命令
-
-| 命令 | 说明 |
-|------|------|
-| `openclaw skill run claw-migrate backup` | 备份 |
-| `openclaw skill run claw-migrate restore` | 恢复 |
-| `openclaw skill run claw-migrate share` | 分享 |
-| `openclaw skill run claw-migrate deploy CT-XXXX` | 部署 |
-| `openclaw skill run claw-migrate search "关键词"` | 搜索 |
-| `openclaw skill run claw-migrate config` | 配置管理 |
+1. **Use Private Repositories** - Always backup to GitHub private repos
+2. **Review Before Backup** - The skill shows all files before uploading; review carefully
+3. **Sensitive Files** - Categories like `.env`, `credentials/`, `identity/` contain secrets; only select if you trust the destination
+4. **Token Storage** - GitHub token can be stored in `~/.openclaw/claw-migrate/config.json` for convenience
+5. **Share Carefully** - Only share configurations you want others to see
 
 ---
 
-## 📝 使用示例
+## 🎯 Common Commands
 
-### 新机器迁移
+| Command | Description |
+|---------|-------------|
+| `openclaw skill run claw-migrate backup` | Backup |
+| `openclaw skill run claw-migrate restore` | Restore |
+| `openclaw skill run claw-migrate share` | Share |
+| `openclaw skill run claw-migrate deploy CT-XXXX` | Deploy |
+| `openclaw skill run claw-migrate search "keyword"` | Search |
+| `openclaw skill run claw-migrate config` | Config Management |
+
+---
+
+## 📝 Usage Examples
+
+### New Machine Migration
 
 ```bash
-# 1. 安装技能
+# 1. Install the skill
 openclaw skill install claw-migrate
 
-# 2. 配置向导
+# 2. Setup wizard
 openclaw skill run claw-migrate setup
 
-# 3. 恢复配置
+# 3. Restore configuration
 openclaw skill run claw-migrate restore
 ```
 
-### 仅备份核心配置
+### Core Config Only
 
 ```bash
 openclaw skill run claw-migrate setup
-# 选择备份内容时输入：r（仅推荐）
+# When selecting backup content, enter: r (recommended only)
 openclaw skill run claw-migrate backup
 ```
 
-### 预览备份
+### Preview Backup
 
 ```bash
 openclaw skill run claw-migrate backup --dry-run
@@ -144,23 +144,23 @@ openclaw skill run claw-migrate backup --dry-run
 
 ---
 
-## 🛠️ 故障排除
+## 🛠️ Troubleshooting
 
-| 错误 | 原因 | 解决方案 |
-|------|------|---------|
-| `404 Not Found` | 仓库不存在或无权限 | 检查仓库名称和 Token 权限 |
-| `401 Unauthorized` | Token 无效 | 重新生成 Token |
-| `Rate limit exceeded` | API 超限 | 等待后重试或使用认证 Token |
-| `未找到配置文件` | 未运行 setup | 先运行 `openclaw skill run claw-migrate setup` |
+| Error | Cause | Solution |
+|-------|-------|----------|
+| `404 Not Found` | Repo doesn't exist or no access | Check repo name and token permissions |
+| `401 Unauthorized` | Invalid token | Regenerate token |
+| `Rate limit exceeded` | API rate limit hit | Wait and retry, or use an authenticated token |
+| `Config not found` | Setup not run | Run `openclaw skill run claw-migrate setup` first |
 
 ---
 
-## 🌐 相关链接
+## 🌐 Related Links
 
-- **[GitHub 仓库](https://github.com/hanxueyuan/claw-migrate)** - 源代码和 Issues
-- **[ClawTalent](https://clawtalent.shop)** - 配置分享平台
-- **[ClawHub](https://clawhub.ai/hanxueyuan/claw-migrate)** - ClawHub 页面
-- **[OpenClaw 文档](https://github.com/openclaw/openclaw)** - 框架文档
+- **[GitHub Repository](https://github.com/hanxueyuan/claw-migrate)** - Source code and Issues
+- **[ClawTalent](https://clawtalent.shop)** - Configuration sharing platform
+- **[ClawHub](https://clawhub.ai/hanxueyuan/claw-migrate)** - ClawHub page
+- **[OpenClaw Docs](https://github.com/openclaw/openclaw)** - Framework documentation
 
 ---
 
