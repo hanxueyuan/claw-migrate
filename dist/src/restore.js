@@ -21,6 +21,33 @@ function isPathSafe(filePath) {
   return !normalized.startsWith('..') && !path.isAbsolute(normalized);
 }
 
+/**
+ * Categorize a file path
+ * @param {string} filePath - File path from backup
+ * @returns {string} Category name
+ */
+function categorizeFile(filePath) {
+  if (filePath.match(/\.(md|json)$/i) && !filePath.includes('/')) {
+    return 'core';
+  }
+  if (filePath.startsWith('memory/')) {
+    return 'memory';
+  }
+  if (filePath.startsWith('.learnings/')) {
+    return 'learnings';
+  }
+  if (filePath.startsWith('skills/')) {
+    return 'skills';
+  }
+  if (filePath.startsWith('docs/')) {
+    return 'docs';
+  }
+  if (filePath.startsWith('scripts/')) {
+    return 'scripts';
+  }
+  return 'other';
+}
+
 class RestoreExecutor {
   constructor(config, options = {}) {
     this.config = config;
@@ -45,6 +72,14 @@ class RestoreExecutor {
     return this;
   }
 
+  // Filter files by categories
+  filterByCategories(files, categories) {
+    return files.filter(file => {
+      const category = categorizeFile(file.path);
+      return categories.includes(category);
+    });
+  }
+
   // Execute restore
   async execute() {
     printHeader('Restore Configuration');
@@ -66,15 +101,24 @@ class RestoreExecutor {
 
       // Get file list
       console.log('\n📦 Fetching repository file list...');
-      const files = await reader.getFileList('all');
+      const allFiles = await reader.getFileList('all');
       
-      if (files.length === 0) {
+      if (allFiles.length === 0) {
         printWarning('No backup files found in repository');
         return;
       }
 
+      // Selective restore: let user choose categories
+      let files = allFiles;
+      if (this.options.categories) {
+        const categories = this.options.categories.split(',');
+        files = this.filterByCategories(allFiles, categories);
+        console.log(`   Selected ${files.length} files from categories: ${categories.join(', ')}\n`);
+      } else {
+        console.log(`   Found ${allFiles.length} files\n`);
+      }
+
       this.stats.total = files.length;
-      console.log(`   Found ${files.length} files\n`);
 
       // Get local file list
       const localFiles = new Set();
@@ -84,6 +128,7 @@ class RestoreExecutor {
         const preview = this.merger.generatePreview(files, localFiles);
         this.merger.printPreview(preview);
         console.log('\n💡 Remove --dry-run to perform the actual restore');
+        console.log('\n💡 Use --categories=core,memory,skills to restore specific categories');
         return;
       }
 

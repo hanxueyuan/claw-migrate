@@ -52,16 +52,26 @@ openclaw skill run claw-migrate backup
 ### Restore from GitHub
 
 ```bash
+# Restore everything
 openclaw skill run claw-migrate restore
+
+# Restore specific categories only
+openclaw skill run claw-migrate restore --categories core,memory
+openclaw skill run claw-migrate restore --categories skills
+
+# Preview first
+openclaw skill run claw-migrate restore --dry-run
+openclaw skill run claw-migrate restore --categories core --dry-run
 ```
 
 **What happens**:
-1. Asks which backup to restore (latest or specific)
-2. Downloads backup
-3. Shows what will be restored
-4. Asks for confirmation
-5. Restores files
-6. Restarts OpenClaw if needed
+1. Fetches backup from GitHub
+2. Shows what will be restored (or filters by --categories)
+3. Asks for confirmation
+4. Restores files (smart merge for .md files)
+5. Restarts OpenClaw if needed
+
+**Available categories**: `core`, `memory`, `learnings`, `skills`, `docs`, `scripts`
 
 ### Share to ClawTalent
 

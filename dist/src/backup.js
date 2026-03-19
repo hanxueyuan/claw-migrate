@@ -117,12 +117,14 @@ class BackupExecutor {
 
   async getFilesToBackup() {
     const files = [];
-    const selectedCategories = this.config.backup?.content || [];
+    let selectedCategories = this.config.backup?.content || [];
 
+    // Fallback to default categories if nothing selected
     if (selectedCategories.length === 0) {
-      printWarning('No backup content selected');
-      console.log('   Please run: openclaw skill run claw-migrate setup');
-      return files;
+      printWarning('No backup content selected, using defaults');
+      console.log('   Backing up critical files only: AGENTS.md, SOUL.md, TOOLS.md, HEARTBEAT.md, memory/, .learnings/, skills/');
+      console.log('   Tip: Run setup to customize: openclaw skill run claw-migrate setup\n');
+      selectedCategories = ['core', 'memory', 'learnings', 'skills'];
     }
 
     // Iterate through user-selected categories

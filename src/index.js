@@ -21,7 +21,8 @@ function parseArgs(args) {
     force: false,
     yes: false,
     limit: 20,
-    tags: null
+    tags: null,
+    categories: null
   };
 
   let command = null;
@@ -62,6 +63,8 @@ function parseArgs(args) {
       options.limit = parseInt(args[++i]) || 20;
     } else if (arg === '--tags') {
       options.tags = args[++i];
+    } else if (arg === '--categories') {
+      options.categories = args[++i];
     } else if (arg === '--help' || arg === '-h') {
       printHelp();
       process.exit(0);

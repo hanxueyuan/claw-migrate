@@ -1,7 +1,7 @@
 {
   "name": "claw-migrate",
   "displayName": "claw-migrate",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "description": "OpenClaw workspace backup & restore - automated with user guidance",
   "author": "Han Xueyuan <xueyuan_han@163.com>",
   "license": "MIT",
@@ -9,6 +9,7 @@
   "repository": "https://github.com/hanxueyuan/claw-migrate",
   "main": "src/index.js",
   "changelog": [
+    "v2.8.1: Added selective restore with --categories option, fallback to default backup list if no setup",
     "v2.8.0: Restored executable functionality - now actually backs up and restores",
     "Automated backup with file scanning and user confirmation",
     "Automated restore with validation and selective recovery",
