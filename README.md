@@ -1,6 +1,6 @@
-# claw-migrate - OpenClaw Migration & Sharing Guide
+# claw-migrate - OpenClaw Backup & Restore Guide
 
-> 🔄 **Four paths**: Backup · Restore · Share · Discover
+> 🔄 **Pure Guidance Skill** - No code, no installation, just follow the instructions
 
 [![Version](https://img.shields.io/github/package-json/v/hanxueyuan/claw-migrate)](https://github.com/hanxueyuan/claw-migrate)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -9,16 +9,9 @@
 
 ## 🎯 What Is This?
 
-claw-migrate provides **clear instructions** for four migration paths:
+**claw-migrate is NOT a tool - it's a guide.**
 
-| Path | What It Does |
-|------|-------------|
-| **📁 Backup** | Save your config locally or to GitHub |
-| **🔄 Restore** | Recover config on new machine |
-| **📤 Share** | Upload to ClawTalent platform |
-| **🔍 Discover** | Find and deploy others' configs |
-
-**No installation needed. Just follow the instructions.**
+No installation needed. No code to run. Just follow the instructions in [SKILL.md](SKILL.md).
 
 ---
 
@@ -27,65 +20,89 @@ claw-migrate provides **clear instructions** for four migration paths:
 ### I Want to Backup
 
 ```bash
-# See: SKILL.md → Path 1: Backup
-# Quick command:
-tar -czf backup.tar.gz -C /workspace/projects/workspace AGENTS.md SOUL.md memory/ .learnings/ skills/
+# Quick backup (core files)
+tar -czf backup.tar.gz -C /workspace/projects/workspace \
+  AGENTS.md SOUL.md IDENTITY.md USER.md TOOLS.md \
+  memory/ .learnings/ docs/ scripts/
+
+# Full backup (include skills)
+tar -czf full-backup.tar.gz -C /workspace/projects/workspace \
+  AGENTS.md SOUL.md memory/ .learnings/ skills/ agents/
 ```
 
 ### I Want to Restore
 
 ```bash
-# See: SKILL.md → Path 2: Restore
-# Quick command:
+# Extract backup
 tar -xzf backup.tar.gz -C /workspace/projects/workspace/
+
+# Re-pair channels
+openclaw pairing
 ```
 
-### I Want to Share to ClawTalent
+### I Want to Share
 
-```bash
-# See: SKILL.md → Path 3: Share
-# You need: ClawTalent account + API token
-# Steps: Prepare → Sanitize → Upload → Get ID
-```
+1. Sanitize sensitive files (`.env`, `credentials/`, etc.)
+2. Upload to GitHub or ClawTalent
+3. Share the repo link or CT-XXXX ID
 
-### I Want to Discover Configs
+### I Want to Discover
 
-```bash
-# See: SKILL.md → Path 4: Discover
-# Browse: https://clawtalent.shop
-# Or use API: curl "https://clawtalent.shop/api/search?q=multi-agent"
-```
+Visit: https://clawtalent.shop
+
+Search for configs shared by the community.
 
 ---
 
 ## 📋 Full Instructions
 
-See **[SKILL.md](SKILL.md)** for complete guides including:
-- Detailed backup/restore checklists
-- ClawTalent upload instructions (manual + API)
-- Discovery and deployment steps
-- Security best practices
-- Quick reference commands
+See **[SKILL.md](SKILL.md)** for:
+- ✅ Detailed backup checklist
+- ✅ Restore step-by-step guide
+- ✅ Security best practices
+- ✅ Troubleshooting tips
+- ✅ Quick reference commands
 
 ---
 
 ## 🔐 Security Tips
 
-1. **Never share** `.env`, `credentials/`, `identity/`
-2. **Always sanitize** phone numbers, emails, API keys
-3. **Use private repos** for personal backups
-4. **Re-pair channels** after restore
+### Always ✅
+- Store backups in **private** repos
+- Use environment variables for API keys
+- Re-pair channels after restore
+- Sanitize before sharing
+
+### Never ❌
+- Share `.env` files
+- Commit API keys to Git
+- Share pairing tokens
+- Backup browser data
+
+---
+
+## 📊 What's Included
+
+| File | Size | Type |
+|------|------|------|
+| SKILL.md | ~6KB | Full instructions |
+| README.md | ~2KB | Quick start |
+| CHANGELOG.md | ~6KB | Version history |
+| .clawhub.json | ~1KB | ClawHub metadata |
+
+**Total: ~15KB** (no code, no dependencies!)
 
 ---
 
 ## 🌐 Links
 
-- **[Full Instructions](SKILL.md)** - All four paths detailed
+- **[Full Instructions](SKILL.md)** - Complete backup/restore guide
 - **[ClawTalent](https://clawtalent.shop)** - Share & discover configs
 - **[GitHub](https://github.com/hanxueyuan/claw-migrate)** - Source & examples
+- **[OpenClaw Docs](https://docs.openclaw.ai)** - Official documentation
 
 ---
 
 ## 📄 License
 
-MIT License
+MIT License - Free to use and share (but remember to sanitize first!)
