@@ -34,7 +34,11 @@ function getOpenClawEnv() {
     openclawRoot = '/workspace/projects';
   }
 
-  const workspaceRoot = path.join(openclawRoot, 'workspace', 'workspace');
+  // Try to find workspace directory
+  let workspaceRoot = path.join(openclawRoot, 'workspace');
+  if (!fs.existsSync(workspaceRoot) || !fs.statSync(workspaceRoot).isDirectory()) {
+    workspaceRoot = path.join(openclawRoot, 'workspace', 'workspace');
+  }
 
   cachedEnv = {
     openclawRoot,

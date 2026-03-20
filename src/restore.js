@@ -1,51 +1,25 @@
 #!/usr/bin/env node
 
 /**
- * Restore execution module
- * Restores configuration from a GitHub repo to the local workspace
+ * Restore execution module - Optimized version
+ * Supports tar.gz backup files and local hardware preservation
  */
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
+const readline = require('readline');
 const { getOpenClawEnv, printHeader, printSuccess, printError, printWarning, printDivider, printFileStatus, ensureDirExists, ProgressBar, formatDuration } = require('./utils');
 const { GitHubReader, getToken } = require('./github');
 const { Merger } = require('./merger');
+const { BACKUP_CATEGORIES } = require('./setup');
 
 /**
  * Validate that a file path is safe (no path traversal)
- * @param {string} filePath - Relative file path to validate
- * @returns {boolean} true if the path is safe
  */
 function isPathSafe(filePath) {
   const normalized = path.normalize(filePath);
   return !normalized.startsWith('..') && !path.isAbsolute(normalized);
-}
-
-/**
- * Categorize a file path
- * @param {string} filePath - File path from backup
- * @returns {string} Category name
- */
-function categorizeFile(filePath) {
-  if (filePath.match(/\.(md|json)$/i) && !filePath.includes('/')) {
-    return 'core';
-  }
-  if (filePath.startsWith('memory/')) {
-    return 'memory';
-  }
-  if (filePath.startsWith('.learnings/')) {
-    return 'learnings';
-  }
-  if (filePath.startsWith('skills/')) {
-    return 'skills';
-  }
-  if (filePath.startsWith('docs/')) {
-    return 'docs';
-  }
-  if (filePath.startsWith('scripts/')) {
-    return 'scripts';
-  }
-  return 'other';
 }
 
 class RestoreExecutor {
@@ -66,23 +40,13 @@ class RestoreExecutor {
     };
   }
 
-  // Initialize
   async init() {
     this.ocEnv = await getOpenClawEnv();
     return this;
   }
 
-  // Filter files by categories
-  filterByCategories(files, categories) {
-    return files.filter(file => {
-      const category = categorizeFile(file.path);
-      return categories.includes(category);
-    });
-  }
-
-  // Execute restore
   async execute() {
-    printHeader('Restore Configuration');
+    printHeader('Restore Configuration (Optimized)');
 
     const token = await getToken(this.config);
     if (!token) {
@@ -91,58 +55,136 @@ class RestoreExecutor {
       process.exit(1);
     }
 
-    const reader = new GitHubReader(token, this.config.repo, this.config.branch);
-
     try {
-      // Test connection
+      // Connect to GitHub
       console.log('\n📡 Connecting to GitHub...');
+      const reader = new GitHubReader(token, this.config.repo, this.config.branch);
       const repoInfo = await reader.testConnection();
       printSuccess(`Connected to repository: ${repoInfo.full_name}`);
 
-      // Get file list
-      console.log('\n📦 Fetching repository file list...');
+      // Get backup list
+      console.log('\n📦 Fetching backup list...');
       const allFiles = await reader.getFileList('all');
+      const backupFiles = allFiles.filter(f => f.path.endsWith('.tar.gz') && f.path.startsWith('backups/'));
       
-      if (allFiles.length === 0) {
+      if (backupFiles.length === 0) {
         printWarning('No backup files found in repository');
         return;
       }
 
-      // Selective restore: let user choose categories
-      let files = allFiles;
-      if (this.options.categories) {
-        const categories = this.options.categories.split(',');
-        files = this.filterByCategories(allFiles, categories);
-        console.log(`   Selected ${files.length} files from categories: ${categories.join(', ')}\n`);
+      // Show available backups
+      console.log(`\n📋 Available backups (${backupFiles.length}):\n`);
+      backupFiles.forEach((f, i) => {
+        const size = f.size > 1024 * 1024 ? `${(f.size / 1024 / 1024).toFixed(1)} MB` : `${(f.size / 1024).toFixed(0)} KB`;
+        const date = f.path.match(/openclaw-backup-(.+)\.tar\.gz/)?.[1] || 'unknown';
+        console.log(`   ${i + 1}) ${f.path} (${size}) - ${date}`);
+      });
+
+      // Let user choose backup
+      console.log('\n💡 Enter backup number to restore, or press Enter for latest');
+      
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      });
+
+      const choice = await new Promise(resolve => {
+        rl.question('   Choice: ', answer => {
+          resolve(answer.trim());
+          rl.close();
+        });
+      });
+
+      let selectedBackup;
+      if (!choice) {
+        // Default to latest (last in list)
+        selectedBackup = backupFiles[backupFiles.length - 1];
+        console.log(`   Selected: ${selectedBackup.path} (latest)\n`);
       } else {
-        console.log(`   Found ${allFiles.length} files\n`);
+        const index = parseInt(choice) - 1;
+        if (index >= 0 && index < backupFiles.length) {
+          selectedBackup = backupFiles[index];
+          console.log(`   Selected: ${selectedBackup.path}\n`);
+        } else {
+          printError('Invalid choice');
+          return;
+        }
       }
 
-      this.stats.total = files.length;
-
-      // Get local file list
-      const localFiles = new Set();
+      // Download backup
+      console.log('📥 Downloading backup...\n');
+      const backupContent = await reader.getFileContent(selectedBackup.path);
       
-      // Preview mode
+      // Extract to temp directory
+      const tempDir = path.join(this.ocEnv.workspaceRoot, '.migrate-restore-temp');
+      ensureDirExists(tempDir);
+      
+      const tarPath = path.join(tempDir, 'backup.tar.gz');
+      fs.writeFileSync(tarPath, Buffer.from(backupContent, 'base64'));
+
+      // Detect local hardware configs BEFORE extraction
+      console.log('\n🔍 Detecting local hardware configurations...\n');
+      const preservedConfigs = await this.detectLocalConfigs();
+      
+      if (preservedConfigs.length > 0) {
+        printSuccess('Found local hardware configurations (will be preserved):');
+        preservedConfigs.forEach(cfg => console.log(`   - ${cfg}`));
+        console.log();
+      } else {
+        printWarning('No local hardware configurations found (new environment)');
+        console.log();
+      }
+
+      // Show restore preview
+      console.log('📋 Restore Preview:\n');
+      console.log(`   Source: ${selectedBackup.path}`);
+      console.log(`   Target: ${this.ocEnv.workspaceRoot}`);
+      console.log(`   Preserved: ${preservedConfigs.length > 0 ? preservedConfigs.join(', ') : 'none'}`);
+      console.log();
+
       if (this.dryRun) {
-        const preview = this.merger.generatePreview(files, localFiles);
-        this.merger.printPreview(preview);
-        console.log('\n💡 Remove --dry-run to perform the actual restore');
-        console.log('\n💡 Use --categories=core,memory,skills to restore specific categories');
+        console.log('💡 Remove --dry-run to perform the actual restore');
+        // Cleanup
+        fs.unlinkSync(tarPath);
+        fs.rmdirSync(tempDir);
         return;
       }
 
-      // Create local backup
-      await this.createLocalBackup();
-
-      // Execute restore
-      console.log('🚀 Starting restore...\n');
-
-      for (const file of files) {
-        await this.restoreFile(reader, file, localFiles);
+      // Confirm restore
+      const confirmed = await this.confirmRestore();
+      if (!confirmed) {
+        console.log('\n⚠️  Restore cancelled\n');
+        // Cleanup
+        fs.unlinkSync(tarPath);
+        fs.rmdirSync(tempDir);
+        return;
       }
 
-      // Output statistics
+      // Create local backup before restore
+      await this.createLocalBackup();
+
+      // Extract backup
+      console.log('\n🔄 Extracting backup...\n');
+      const extractDir = path.join(tempDir, 'extracted');
+      ensureDirExists(extractDir);
+      
+      try {
+        execSync(`tar -xzf "${tarPath}" -C "${extractDir}"`, { stdio: 'pipe' });
+        printSuccess('Backup extracted');
+      } catch (err) {
+        printError('Failed to extract backup');
+        throw err;
+      }
+
+      // Restore files (preserving hardware configs)
+      console.log('\n🔄 Restoring files...\n');
+      await this.restoreFromDirectory(extractDir, preservedConfigs);
+
+      // Cleanup
+      fs.unlinkSync(tarPath);
+      fs.rmSync(tempDir, { recursive: true, force: true });
+
+      // Show summary
       this.printSummary();
       this.printNextSteps();
 
@@ -155,63 +197,65 @@ class RestoreExecutor {
     }
   }
 
-  // Restore a single file
-  async restoreFile(reader, file, localFiles) {
-    // Path safety check - skip unsafe paths
-    if (!isPathSafe(file.path)) {
-      printFileStatus(file.path, 'skipped', 'unsafe path (traversal detected)');
-      this.stats.skipped++;
-      return;
+  /**
+   * Detect local hardware configurations
+   */
+  async detectLocalConfigs() {
+    const preserved = [];
+    const rootDir = path.dirname(this.ocEnv.workspaceRoot);
+
+    // Check identity/
+    if (fs.existsSync(path.join(rootDir, 'identity')) && 
+        fs.readdirSync(path.join(rootDir, 'identity')).length > 0) {
+      preserved.push('identity/ (device auth)');
     }
 
-    const strategy = this.merger.getStrategy(file.path);
-    const fullPath = this.ocEnv.getWorkspaceFile(file.path);
-    const existsLocally = fs.existsSync(fullPath);
-    
-    localFiles.add(file.path);
-
-    // Incremental sync: skip if local copy exists
-    if (strategy === 'incremental' && existsLocally) {
-      printFileStatus(file.path, 'skipped', 'already exists locally');
-      this.stats.skipped++;
-      return;
+    // Check feishu/
+    if (fs.existsSync(path.join(rootDir, 'feishu')) && 
+        fs.readdirSync(path.join(rootDir, 'feishu')).length > 0) {
+      preserved.push('feishu/ (Feishu pairing)');
     }
 
-    // Skip
-    if (strategy === 'skip') {
-      printFileStatus(file.path, 'skipped', 'sensitive/machine-specific');
-      this.stats.skipped++;
-      return;
+    // Check browser/
+    if (fs.existsSync(path.join(rootDir, 'browser')) && 
+        fs.readdirSync(path.join(rootDir, 'browser')).length > 0) {
+      preserved.push('browser/ (browser data)');
     }
 
-    try {
-      const content = await reader.getFileContent(file.path);
-      ensureDirExists(path.dirname(fullPath));
-
-      if (strategy === 'merge' && existsLocally) {
-        const localContent = fs.readFileSync(fullPath, 'utf8');
-        const mergedContent = this.merger.merge(file.path, localContent, content);
-        fs.writeFileSync(fullPath, mergedContent, 'utf8');
-        printFileStatus(file.path, 'success', 'merged');
-        this.stats.merged++;
-      } else if (strategy === 'append' && existsLocally) {
-        const localContent = fs.readFileSync(fullPath, 'utf8');
-        const appendedContent = this.merger.merge(file.path, localContent, content);
-        fs.writeFileSync(fullPath, appendedContent, 'utf8');
-        printFileStatus(file.path, 'success', 'appended');
-        this.stats.appended++;
-      } else {
-        fs.writeFileSync(fullPath, content, 'utf8');
-        printFileStatus(file.path, 'success', existsLocally ? 'overwritten' : 'new');
-        this.stats.restored++;
-      }
-    } catch (err) {
-      printFileStatus(file.path, 'error', err.message);
-      this.stats.errors++;
+    // Check credentials/
+    if (fs.existsSync(path.join(rootDir, 'credentials')) && 
+        fs.readdirSync(path.join(rootDir, 'credentials')).length > 0) {
+      preserved.push('credentials/ (auth credentials)');
     }
+
+    // Check .env
+    if (fs.existsSync(path.join(rootDir, '.env'))) {
+      preserved.push('.env (environment variables)');
+    }
+
+    return preserved;
   }
 
-  // Create local backup
+  /**
+   * Confirm restore with user
+   */
+  async confirmRestore() {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+
+    return new Promise(resolve => {
+      rl.question('Confirm restore? [y/N]: ', answer => {
+        rl.close();
+        resolve(answer.trim().toLowerCase() === 'y');
+      });
+    });
+  }
+
+  /**
+   * Create local backup before restore
+   */
   async createLocalBackup() {
     const backupDir = path.join(this.ocEnv.workspaceRoot, '.migrate-backup');
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -235,26 +279,104 @@ class RestoreExecutor {
     console.log(`💾 Local backup created: ${backupPath}\n`);
   }
 
-  // Print summary
+  /**
+   * Restore from extracted directory
+   */
+  async restoreFromDirectory(extractDir, preservedConfigs) {
+    const rootDir = path.dirname(this.ocEnv.workspaceRoot);
+    
+    // Read manifest if exists
+    let manifest = null;
+    const manifestPath = path.join(extractDir, 'backup-manifest.json');
+    if (fs.existsSync(manifestPath)) {
+      manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      this.stats.total = manifest.totalFiles || 0;
+    }
+
+    // Restore core files
+    const coreFiles = ['AGENTS.md', 'SOUL.md', 'IDENTITY.md', 'USER.md', 'TOOLS.md', 'HEARTBEAT.md', 'BOOTSTRAP.md'];
+    for (const file of coreFiles) {
+      const src = path.join(extractDir, file);
+      const dst = this.ocEnv.getWorkspaceFile(file);
+      if (fs.existsSync(src)) {
+        fs.copyFileSync(src, dst);
+        printFileStatus(file, 'success', 'restored');
+        this.stats.restored++;
+      }
+    }
+
+    // Restore directories
+    const directories = [
+      { src: 'memory', dst: 'memory', name: 'memory/' },
+      { src: '.learnings', dst: '.learnings', name: '.learnings/' },
+      { src: 'skills', dst: 'skills', name: 'skills/' },
+      { src: 'cron', dst: 'cron', name: 'cron/' },
+      { src: 'docs', dst: 'docs', name: 'docs/' },
+      { src: 'scripts', dst: 'scripts', name: 'scripts/' },
+      { src: 'templates', dst: 'templates', name: 'templates/' },
+      { src: 'agents', dst: '../agents', name: 'agents/' },
+      { src: 'subagents', dst: '../subagents', name: 'subagents/' },
+      { src: 'delivery-queue', dst: '../delivery-queue', name: 'delivery-queue/' },
+      { src: 'devices', dst: '../devices', name: 'devices/' }
+    ];
+
+    for (const dir of directories) {
+      const srcPath = path.join(extractDir, dir.src);
+      const dstPath = path.join(rootDir, dir.dst);
+      
+      if (fs.existsSync(srcPath)) {
+        // Check if this directory should be preserved
+        const shouldPreserve = preservedConfigs.some(cfg => cfg.includes(dir.name));
+        
+        if (shouldPreserve) {
+          printFileStatus(dir.name, 'skipped', 'preserved (local config exists)');
+          this.stats.skipped++;
+        } else {
+          // Copy directory
+          if (fs.existsSync(dstPath)) {
+            fs.rmSync(dstPath, { recursive: true, force: true });
+          }
+          fs.cpSync(srcPath, dstPath, { recursive: true });
+          printFileStatus(dir.name, 'success', 'restored');
+          this.stats.restored++;
+        }
+      }
+    }
+
+    // Restore config files
+    const configFiles = [
+      { src: 'openclaw.json', dst: '../openclaw.json', name: 'openclaw.json' }
+    ];
+
+    for (const cfg of configFiles) {
+      const src = path.join(extractDir, cfg.src);
+      const dst = path.join(rootDir, cfg.dst);
+      if (fs.existsSync(src)) {
+        fs.copyFileSync(src, dst);
+        printFileStatus(cfg.name, 'success', 'restored');
+        this.stats.restored++;
+      }
+    }
+  }
+
   printSummary() {
     printDivider();
     printSuccess('Restore complete!');
-    console.log(`   Overwritten: ${this.stats.restored} files`);
-    console.log(`   Merged: ${this.stats.merged} files`);
-    console.log(`   Appended: ${this.stats.appended} files`);
-    console.log(`   Skipped: ${this.stats.skipped} files`);
+    console.log(`   Restored: ${this.stats.restored} files/directories`);
+    console.log(`   Skipped: ${this.stats.skipped} files (preserved)`);
     if (this.stats.errors > 0) {
       printWarning(`   Failed: ${this.stats.errors} files`);
     }
   }
 
-  // Print next steps
   printNextSteps() {
     console.log('\n📌 Next steps:');
-    console.log('   • Review config files for correctness');
-    console.log('   • Re-pair channels if needed');
-    console.log('   • Run `openclaw memory rebuild` to rebuild the memory index');
-    console.log('   • If issues arise, restore from backup: .migrate-backup/');
+    console.log('   1. Review restored config files for correctness');
+    console.log('   2. Verify Feishu connection (if preserved, should work immediately)');
+    console.log('   3. Run: openclaw memory rebuild (if memory was restored)');
+    console.log('   4. Restart OpenClaw: openclaw gateway restart');
+    console.log('   5. If issues arise, restore from backup: .migrate-backup/');
+    console.log();
   }
 }
 

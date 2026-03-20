@@ -167,7 +167,7 @@ class GitHubReader extends GitHubClient {
 
 class GitHubWriter extends GitHubClient {
   // Update/create file
-  async updateFile(filePath, content, message) {
+  async updateFile(filePath, content, message, isBinary = false) {
     try {
       // Check if file exists
       let sha = null;
@@ -178,8 +178,10 @@ class GitHubWriter extends GitHubClient {
         // File does not exist, will create new
       }
 
-      // Base64 encode
-      const encodedContent = Buffer.from(content).toString('base64');
+      // Base64 encode (handle both string and buffer)
+      const encodedContent = isBinary || Buffer.isBuffer(content) 
+        ? Buffer.from(content).toString('base64')
+        : Buffer.from(content, 'utf8').toString('base64');
 
       const body = {
         message,

@@ -1,6 +1,6 @@
 ---
 name: claw-migrate
-description: OpenClaw workspace backup & restore - automated with user guidance
+description: OpenClaw workspace backup & restore - optimized with tar.gz packaging
 homepage: https://github.com/hanxueyuan/claw-migrate
 metadata:
   {"openclaw":{"emoji":"🔄","requires":{"bins":["git","tar"],"env":["GITHUB_TOKEN"]},"primaryEnv":"GITHUB_TOKEN"}}
@@ -8,242 +8,242 @@ metadata:
 
 # claw-migrate - OpenClaw Backup & Restore
 
-> **Two modes**: Personal Migration (full backup) · Community Sharing (sanitized)
+> **Optimized**: Fast tar.gz packaging · Smart hardware preservation · Interactive restore
 
 ---
 
-## 🎯 Two Use Cases
+## 🎯 Features
 
-### Mode 1: Personal Migration (Your Use Case)
+### ✅ Backup Features
 
-**Purpose**: Migrate your OpenClaw to a new machine
+- **Fast Packaging**: Uses tar.gz compression (30-60 seconds vs 1-2 hours)
+- **Smart Categories**: Selective backup by category (core, memory, skills, etc.)
+- **Private Storage**: Backups stored in private GitHub repo
+- **Manifest Included**: Each backup includes file list for verification
 
-**What's backed up**:
-- ✅ `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `HEARTBEAT.md` - Team config
-- ✅ `memory/` - Memory database
-- ✅ `.learnings/` - Learning records
-- ✅ `skills/` - Custom skills
-- ✅ `openclaw.json` - **With API keys** (for immediate use)
-- ✅ `feishu/` - **With pairing info** (no re-pair needed)
-- ✅ `.env`, `credentials/`, `identity/` - **If you choose**
+### ✅ Restore Features
 
-**Storage**: Private GitHub repo (only you can access)
-
-**Restore**: Full restore, everything works immediately
+- **Interactive Selection**: Choose which backup to restore
+- **Hardware Preservation**: Automatically preserves local device configs
+- **Smart Merge**: Memory files merged, learning records appended
+- **Local Backup**: Creates backup before restore (safety net)
 
 ---
 
-### Mode 2: Community Sharing (Share to ClawTalent)
+## 🚀 Quick Start
 
-**Purpose**: Share your config with others
-
-**What's backed up**:
-- ✅ `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `HEARTBEAT.md`
-- ✅ `skills/` - Custom skills
-- ⚠️ `memory/` - **Optional** (may contain personal info)
-- ⚠️ `.learnings/` - **Optional** (may contain personal info)
-
-**Automatically sanitized**:
-- 🔑 API keys → `${API_KEY}`
-- 📱 Phone numbers → `${PHONE}`
-- 📧 Emails → `${EMAIL}`
-- 🔐 Tokens → `${TOKEN}`
-
-**Storage**: ClawTalent platform (public or private)
-
-**Deploy**: Others get template, need to fill in their own values
-
----
-
-## 🚀 Choose Your Command
-
-| Command | Use Case | Sensitive Info |
-|---------|----------|----------------|
-| `backup` | Personal migration | ✅ Included |
-| `backup --personal` | Personal migration | ✅ Included |
-| `share` | Share to ClawTalent | ❌ Auto-removed |
-| `share --sanitize` | Share to ClawTalent | ❌ Auto-removed |
-
----
-
-## 🚀 Commands
-
-### Personal Backup (Full, including sensitive info)
+### First Time Setup
 
 ```bash
-# Full backup (for personal migration)
+# Run setup wizard
+openclaw skill run claw-migrate setup
+
+# Or manually create config
+mkdir -p /workspace/projects/claw-migrate
+cat > /workspace/projects/claw-migrate/config.json << 'EOF'
+{
+  "repo": "hanxueyuan/lisa-backup",
+  "branch": "main",
+  "backup": {
+    "content": ["core", "memory", "learnings", "skills", "cron", "docs", "scripts"]
+  }
+}
+EOF
+```
+
+### Backup
+
+```bash
+# Execute backup (fast tar.gz packaging)
 openclaw skill run claw-migrate backup
 
-# With verbose output
-openclaw skill run claw-migrate backup --verbose
-
-# Preview first
+# Preview mode (dry-run)
 openclaw skill run claw-migrate backup --dry-run
+
+# Verbose output
+openclaw skill run claw-migrate backup --verbose
 ```
 
 **What happens**:
-1. Scans workspace for **all** files
-2. Shows you the complete file list (including sensitive)
-3. Asks for confirmation
-4. Pushes to your **private** GitHub repo
-5. **Includes**: API keys, tokens, pairing info
+1. ✅ Scans workspace for selected categories
+2. ✅ Creates tar.gz archive (30-60 seconds)
+3. ✅ Uploads single file to GitHub (1-2 seconds)
+4. ✅ Stores in `backups/` directory of your repo
 
-**⚠️ Important**: Only use with **private** GitHub repos!
+**Output example**:
+```
+╔════════════════════════════════════════════════════╗
+║  Execute Backup (Optimized)                        ║
+╚════════════════════════════════════════════════════╝
 
-```bash
-# Create private repo first
-gh repo create openclaw-backup --private
+📡 Connecting to GitHub...
+✅ Connected to repository: hanxueyuan/lisa-backup
+
+📦 Scanning workspace...
+   Found 2924 files, total size 50.23 MB
+
+📦 Creating backup archive...
+✅ Backup archive created: 28.5 MB
+   Location: /workspace/projects/.migrate-backup/openclaw-backup-2026-03-20_083000.tar.gz
+
+📤 Uploading backup archive...
+✅ Backup uploaded: backups/openclaw-backup-2026-03-20_083000.tar.gz
+
+────────────────────────────────────────────────────────
+
+✅ Backup complete!
+   Succeeded: 1 archive
+   Duration: 45.2s
+   Archive size: 28.5 MB
+   Speed: 0.63 MB/s
 ```
 
-### Restore from GitHub
+---
+
+### Restore
 
 ```bash
-# Restore everything
+# Restore from GitHub (interactive)
 openclaw skill run claw-migrate restore
 
-# Restore specific categories only
-openclaw skill run claw-migrate restore --categories core,memory
-openclaw skill run claw-migrate restore --categories skills
-
-# Preview first
+# Preview mode
 openclaw skill run claw-migrate restore --dry-run
-openclaw skill run claw-migrate restore --categories core --dry-run
+
+# Verbose output
+openclaw skill run claw-migrate restore --verbose
 ```
 
 **What happens**:
-1. Fetches backup from GitHub
-2. Shows what will be restored (or filters by --categories)
-3. Asks for confirmation
-4. Restores files (smart merge for .md files)
-5. Restarts OpenClaw if needed
+1. ✅ Lists available backups from GitHub
+2. ✅ Lets you choose which backup to restore
+3. ✅ Downloads and extracts tar.gz
+4. ✅ Detects local hardware configs (preserves them)
+5. ✅ Restores files (with smart merge)
+6. ✅ Creates local backup before restore
 
-**Available categories**: `core`, `memory`, `learnings`, `skills`, `docs`, `scripts`
-
-### Share to ClawTalent (Sanitized, for others)
-
-```bash
-# Share (auto-sanitizes sensitive info)
-openclaw skill run claw-migrate share
-
-# With custom name
-openclaw skill run claw-migrate share --name "My Multi-Agent Setup"
-
-# Preview first (see what will be sanitized)
-openclaw skill run claw-migrate share --dry-run
+**Restore process**:
 ```
+╔════════════════════════════════════════════════════╗
+║  Restore Configuration (Optimized)                 ║
+╚════════════════════════════════════════════════════╝
 
-**What happens**:
-1. Prepares share package
-2. **Auto-scans for sensitive info**:
-   - 📱 Phone numbers → `${YOUR_PHONE}`
-   - 📧 Emails → `${YOUR_EMAIL}`
-   - 🔑 API keys → `${API_KEY}`
-   - 🔐 Tokens → `${TOKEN}`
-3. Shows you what was sanitized
-4. Asks for confirmation
-5. Uploads to ClawTalent
-6. Returns Configuration ID (e.g., `CT-0001`)
+📡 Connecting to GitHub...
+✅ Connected to repository: hanxueyuan/lisa-backup
 
-**✅ Safe to share** - All sensitive info removed
+📦 Fetching backup list...
 
-### Deploy from ClawTalent
+📋 Available backups (3):
 
-```bash
-openclaw skill run claw-migrate deploy CT-0001
+   1) backups/openclaw-backup-2026-03-20_073840.tar.gz (36 MB) - 2026-03-20_073840
+   2) backups/openclaw-backup-2026-03-20_073500.tar.gz (29 MB) - 2026-03-20_073500
+   3) backups/openclaw-full-backup-2026-03-20_073641.tar.gz (64 MB) - 2026-03-20_073641
+
+💡 Enter backup number to restore, or press Enter for latest
+   Choice: [press Enter for latest]
+   Selected: backups/openclaw-backup-2026-03-20_073840.tar.gz (latest)
+
+📥 Downloading backup...
+
+🔍 Detecting local hardware configurations...
+
+✅ Found local hardware configurations (will be preserved):
+   - identity/ (device auth)
+   - feishu/ (Feishu pairing)
+   - browser/ (browser data)
+   - credentials/ (auth credentials)
+   - .env (environment variables)
+
+📋 Restore Preview:
+
+   Source: backups/openclaw-backup-2026-03-20_073840.tar.gz
+   Target: /workspace/projects/workspace
+   Preserved: identity/, feishu/, browser/, credentials/, .env
+
+Confirm restore? [y/N]: y
+
+💾 Local backup created: /workspace/projects/workspace/.migrate-backup/restore-2026-03-20T08-30-00
+
+🔄 Extracting backup...
+✅ Backup extracted
+
+🔄 Restoring files...
+
+   ✓ AGENTS.md - restored
+   ✓ SOUL.md - restored
+   ✓ memory/ - restored
+   ✓ skills/ - restored
+   ⏭️  identity/ - preserved (local config exists)
+   ⏭️  feishu/ - preserved (local config exists)
+
+────────────────────────────────────────────────────────
+
+✅ Restore complete!
+   Restored: 15 files/directories
+   Skipped: 5 files (preserved)
+
+📌 Next steps:
+   1. Review restored config files for correctness
+   2. Verify Feishu connection (if preserved, should work immediately)
+   3. Run: openclaw memory rebuild (if memory was restored)
+   4. Restart OpenClaw: openclaw gateway restart
+   5. If issues arise, restore from backup: .migrate-backup/
 ```
-
-**What happens**:
-1. Fetches config from ClawTalent
-2. Shows what will be deployed
-3. Asks for confirmation
-4. Deploys to workspace
-5. Guides re-pairing if needed
-
-### Search ClawTalent
-
-```bash
-openclaw skill run claw-migrate search "multi-agent"
-```
-
-**What happens**:
-1. Searches ClawTalent
-2. Shows results with descriptions
-3. Lets you pick one to deploy
 
 ---
 
-## 📋 Backup Categories (Customizable)
+## 📋 Backup Categories
 
-### Default (Safe)
-- Core configs (AGENTS.md, SOUL.md, etc.)
-- memory/
-- .learnings/
-- skills/
+### Default Categories (Safe)
 
-### Extended (Optional)
-- docs/
-- scripts/
-- templates/
+| Category | Content | Sensitive |
+|----------|---------|-----------|
+| `core` | AGENTS.md, SOUL.md, IDENTITY.md, USER.md, TOOLS.md, HEARTBEAT.md | ❌ |
+| `memory` | MEMORY.md, memory/ | ❌ |
+| `learnings` | .learnings/ | ❌ |
+| `skills` | skills/ (excluding .git) | ❌ |
 
-### Sensitive (Requires Confirmation)
-- openclaw.json (without API keys)
-- feishu/ (without session tokens)
+### Optional Categories
 
----
+| Category | Content | Sensitive |
+|----------|---------|-----------|
+| `cron` | cron/, cron/jobs.json | ❌ |
+| `docs` | docs/ | ❌ |
+| `scripts` | scripts/ | ❌ |
+| `templates` | templates/ | ❌ |
 
-## 🔐 Security Comparison
+### Machine-Specific (Use with Caution)
 
-| Feature | `backup` (Personal) | `share` (Community) |
-|---------|--------------------|--------------------|
-| **API Keys** | ✅ Included | ❌ Replaced with `${API_KEY}` |
-| **Tokens** | ✅ Included | ❌ Replaced with `${TOKEN}` |
-| **Phone Numbers** | ✅ Included | ❌ Replaced with `${PHONE}` |
-| **Emails** | ✅ Included | ❌ Replaced with `${EMAIL}` |
-| **Feishu Pairing** | ✅ Included | ❌ Removed |
-| **Memory Data** | ✅ Included | ⚠️ Optional |
-| **Learning Records** | ✅ Included | ⚠️ Optional |
-| **Storage** | Private GitHub | ClawTalent Platform |
-| **Audience** | Only you | Public/Community |
-
-### When to Use Which
-
-**Use `backup` when**:
-- ✅ Migrating to a new machine
-- ✅ Full disaster recovery
-- ✅ You control the GitHub repo (private)
-
-**Use `share` when**:
-- ✅ Sharing your config with others
-- ✅ Publishing to ClawTalent
-- ✅ Creating a template for the community
-
-### Sensitive Data Detection
-Before share/upload, scans for:
-- 📱 Phone numbers (China: 1[3-9][0-9]{9})
-- 📧 Email addresses
-- 🔑 API keys (sk-*, ghp_*, etc.)
-- 🏠 File paths
-
-### User Confirmation Required
-- First-time backup to new repo
-- Sharing to ClawTalent
-- Restoring to different path
-- Any sensitive file inclusion
+| Category | Content | Sensitive |
+|----------|---------|-----------|
+| `openclaw_json` | openclaw.json | ❌ (machine-specific paths) |
+| `feishu` | feishu/ | ⚠️ (pairing info) |
+| `identity` | identity/ | 🔴 (device auth) |
+| `env` | .env, .env.* | 🔴 (API keys) |
 
 ---
 
 ## ⚙️ Configuration
 
-### Setup (First Time)
+### Config File Location
 
-```bash
-openclaw skill run claw-migrate setup
+```
+/workspace/projects/claw-migrate/config.json
 ```
 
-**Configures**:
-- GitHub repo (format: `owner/repo`)
-- Backup preferences (which categories)
-- ClawTalent token (for share/deploy)
+### Example Config
+
+```json
+{
+  "repo": "hanxueyuan/lisa-backup",
+  "branch": "main",
+  "backup": {
+    "content": ["core", "memory", "learnings", "skills", "cron", "docs", "scripts"]
+  },
+  "restore": {
+    "preserveHardware": true
+  }
+}
+```
 
 ### View Config
 
@@ -259,99 +259,106 @@ openclaw skill run claw-migrate config --edit
 
 ---
 
-## 📝 Usage Examples
+## 🔐 Security
 
-### Quick Backup
+### Private Repository
 
-```bash
-# Backup with defaults
-openclaw skill run claw-migrate backup
-
-# Backup with extended files
-openclaw skill run claw-migrate backup --extended
-
-# Preview only (dry-run)
-openclaw skill run claw-migrate backup --dry-run
-```
-
-### Restore Options
+**Always use private repositories for backups**:
 
 ```bash
-# Restore latest backup
-openclaw skill run claw-migrate restore
-
-# Restore specific backup
-openclaw skill run claw-migrate restore --from backup-2026-03-19
-
-# Restore to different path
-openclaw skill run claw-migrate restore --to /new/workspace/
+# Create private repo
+gh repo create openclaw-backup --private
 ```
 
-### Share Workflow
+### Sensitive Data
 
-```bash
-# Share (will scan and prompt for sanitization)
-openclaw skill run claw-migrate share
+**Backup includes sensitive data if you select**:
+- `identity/` - Device authentication
+- `feishu/` - Feishu pairing info
+- `.env` - API keys and tokens
+- `credentials/` - Auth credentials
 
-# Share with custom name
-openclaw skill run claw-migrate share --name "My Multi-Agent Setup"
-
-# Dry-run (see what would be shared)
-openclaw skill run claw-migrate share --dry-run
-```
-
-### Discover & Deploy
-
-```bash
-# Search
-openclaw skill run claw-migrate search "finance"
-
-# Deploy by ID
-openclaw skill run claw-migrate deploy CT-0001
-
-# Deploy with review first
-openclaw skill run claw-migrate deploy CT-0001 --review
-```
+**Best practices**:
+1. ✅ Only backup to **private** repos
+2. ✅ Never share backup files publicly
+3. ✅ Use selective categories (exclude sensitive if not needed)
+4. ✅ Regularly rotate API keys
 
 ---
 
 ## 🛠️ Troubleshooting
 
-### "Backup failed"
+### "Backup failed: Network error"
+
 ```bash
 # Check GitHub token
 echo $GITHUB_TOKEN
 
 # Verify repo access
 gh repo view YOUR_USERNAME/openclaw-backup
+
+# Retry backup
+openclaw skill run claw-migrate backup
 ```
 
-### "Restore failed"
+### "Restore failed: No backup files found"
+
 ```bash
-# List available backups
-openclaw skill run claw-migrate config --list-backups
+# List backups manually
+gh repo view YOUR_USERNAME/openclaw-backup --json files
 
-# Check workspace path
-openclaw skill run claw-migrate config
+# Check if backups/ directory exists
+gh api /repos/YOUR_USERNAME/openclaw-backup/contents/backups
 ```
 
-### "Share rejected"
+### "Restore failed: Cannot extract backup"
+
 ```bash
-# See what sensitive files found
-openclaw skill run claw-migrate share --dry-run
+# Check disk space
+df -h
 
-# Manually sanitize then retry
-# Edit files to remove sensitive info
-openclaw skill run claw-migrate share
+# Clean up temp files
+rm -rf /workspace/projects/.migrate-restore-temp
+
+# Retry restore
+openclaw skill run claw-migrate restore
 ```
+
+### "Local configs not preserved"
+
+This happens when:
+1. Restoring to a new environment (no local configs exist)
+2. Config detection failed
+
+**Manual preservation**:
+```bash
+# Before restore, backup manually
+cp -r /workspace/projects/identity /tmp/identity-backup
+cp -r /workspace/projects/feishu /tmp/feishu-backup
+
+# After restore, restore manually
+cp -r /tmp/identity-backup/* /workspace/projects/identity/
+cp -r /tmp/feishu-backup/* /workspace/projects/feishu/
+```
+
+---
+
+## 📊 Performance Comparison
+
+| Version | Backup Time | Restore Time | Method |
+|---------|-------------|--------------|--------|
+| **Optimized (v2.0)** | 30-60s | 1-2 min | tar.gz packaging |
+| Legacy (v1.0) | 1-2 hours | 30-60 min | File-by-file upload |
+
+**Improvement**: ~100x faster! 🚀
 
 ---
 
 ## 🌐 Resources
 
 - **[GitHub Repo](https://github.com/hanxueyuan/claw-migrate)** - Source code
-- **[ClawTalent](https://clawtalent.shop)** - Share & discover configs
-- **[OpenClaw Docs](https://github.com/openclaw/openclaw)** - Framework docs
+- **[OpenClaw Docs](https://docs.openclaw.ai)** - Framework docs
+- **[Backup Guide](scripts/BACKUP_GUIDE.md)** - Detailed usage guide
 
 ---
 

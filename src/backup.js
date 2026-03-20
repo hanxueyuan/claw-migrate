@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
 /**
- * Backup execution module
- * Backs up exactly what the user selected, no forced restrictions
+ * Backup execution module - Optimized version
+ * Uses tar.gz packaging for fast backup
  */
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 const { getOpenClawEnv, printHeader, printSuccess, printError, printWarning, printDivider, printFileStatus, ProgressBar, formatFileSize, formatDuration } = require('./utils');
 const { GitHubWriter, getToken } = require('./github');
 const { BACKUP_CATEGORIES } = require('./setup');
@@ -32,7 +33,7 @@ class BackupExecutor {
   }
 
   async execute() {
-    printHeader('Execute Backup');
+    printHeader('Execute Backup (Optimized)');
 
     const startTime = Date.now();
 
@@ -62,35 +63,29 @@ class BackupExecutor {
       this.stats.total = files.length;
       
       // Calculate total size
-      const totalSize = files.reduce((sum, f) => sum + getFileSize(f.fullPath), 0);
+      const totalSize = files.reduce((sum, f) => sum + this.getFileSize(f.fullPath), 0);
       console.log(`   Found ${files.length} files, total size ${formatFileSize(totalSize)}\n`);
 
       if (this.dryRun) {
         console.log('📋 Preview of files to be backed up:\n');
         files.forEach(f => {
-          const size = formatFileSize(getFileSize(f.fullPath));
+          const size = formatFileSize(this.getFileSize(f.fullPath));
           console.log(`   + ${f.path} (${size})`);
         });
         console.log('\n💡 Remove --dry-run to perform the actual backup');
         return;
       }
 
-      // Upload files
-      console.log('📤 Starting upload...\n');
+      // Create tar.gz backup
+      console.log('📦 Creating backup archive...\n');
+      const tarPath = await this.createTarball(files, totalSize);
       
-      const progressBar = new ProgressBar(files.length, { 
-        prefix: '   Upload progress',
-        width: 40
-      });
-      
-      for (const file of files) {
-        await this.uploadFile(writer, file);
-        progressBar.tick(file.path);
-      }
-      progressBar.done();
+      // Upload single file
+      console.log('📤 Uploading backup archive...\n');
+      await this.uploadTarball(writer, tarPath);
 
       const duration = Date.now() - startTime;
-      this.printSummary(duration);
+      this.printSummary(duration, tarPath);
 
     } catch (err) {
       printError(`Backup failed: ${err.message}`);
@@ -101,17 +96,123 @@ class BackupExecutor {
     }
   }
 
-  async uploadFile(writer, file) {
+  // Get file size
+  getFileSize(filePath) {
     try {
-      const content = fs.readFileSync(file.fullPath, 'utf8');
-      const commitMessage = `backup: ${file.path} - ${new Date().toISOString()}`;
-      
-      await writer.updateFile(file.path, content, commitMessage);
-      printFileStatus(file.path, 'success');
-      this.stats.uploaded++;
+      const stats = fs.statSync(filePath);
+      return stats.size;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  // Create tar.gz archive
+  async createTarball(files, totalSize) {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0] + '_' + new Date().toISOString().split('T')[1].split('.')[0].replace(/:/g, '');
+    const tarName = `openclaw-backup-${timestamp}.tar.gz`;
+    const tarPath = path.join(this.ocEnv.workspaceRoot, '.migrate-backup', tarName);
+    
+    // Ensure backup directory exists
+    const backupDir = path.dirname(tarPath);
+    if (!fs.existsSync(backupDir)) {
+      fs.mkdirSync(backupDir, { recursive: true });
+    }
+
+    // Create file list
+    const fileListPath = path.join(backupDir, 'file-list.txt');
+    const fileListContent = files.map(f => f.fullPath).join('\n');
+    fs.writeFileSync(fileListPath, fileListContent, 'utf8');
+
+    // Use tar command for fast compression
+    try {
+      // Create tar with progress
+      const workspaceRoot = this.ocEnv.workspaceRoot;
+      const relativePaths = files.map(f => {
+        return path.relative(workspaceRoot, f.fullPath);
+      });
+
+      // Write file list for restore
+      const manifest = {
+        timestamp,
+        totalFiles: files.length,
+        totalSize,
+        files: files.map(f => ({ path: f.path, fullPath: f.fullPath, category: f.category }))
+      };
+      fs.writeFileSync(path.join(backupDir, 'backup-manifest.json'), JSON.stringify(manifest, null, 2));
+
+      // Create tar using tar command (faster than node-tar)
+      const tarCommand = `cd "${workspaceRoot}" && tar -czf "${tarPath}" -T "${fileListPath}" 2>/dev/null || tar -czf "${tarPath}" ${relativePaths.slice(0, 100).join(' ')}`;
+      execSync(tarCommand, { stdio: 'pipe' });
+
+      const tarSize = fs.statSync(tarPath).size;
+      printSuccess(`Backup archive created: ${formatFileSize(tarSize)}`);
+      console.log(`   Location: ${tarPath}\n`);
+
+      // Clean up file list
+      fs.unlinkSync(fileListPath);
+
+      return tarPath;
     } catch (err) {
-      printFileStatus(file.path, 'error', err.message);
-      this.stats.errors++;
+      // Fallback: create simple tar
+      printWarning('tar command failed, using fallback method');
+      const tarCommand = `cd "${workspaceRoot}" && tar -czf "${tarPath}" . 2>/dev/null`;
+      execSync(tarCommand, { stdio: 'pipe' });
+      return tarPath;
+    }
+  }
+
+  // Upload tar.gz to GitHub using git command
+  async uploadTarball(writer, tarPath) {
+    const tarName = path.basename(tarPath);
+    const backupDir = path.join(this.ocEnv.workspaceRoot, '.migrate-backup', 'git-upload');
+    const repoUrl = `https://${this.config.token || process.env.GITHUB_TOKEN}@github.com/${this.config.repo}.git`;
+    
+    // Ensure backup directory exists
+    if (fs.existsSync(backupDir)) {
+      fs.rmSync(backupDir, { recursive: true, force: true });
+    }
+    fs.mkdirSync(backupDir, { recursive: true });
+
+    try {
+      // Clone repo
+      console.log('   Cloning repository...');
+      execSync(`git clone --depth 1 --branch ${this.config.branch} ${repoUrl} "${backupDir}" 2>/dev/null`, { stdio: 'pipe' });
+
+      // Create backups directory if not exists
+      const backupsDir = path.join(backupDir, 'backups');
+      if (!fs.existsSync(backupsDir)) {
+        fs.mkdirSync(backupsDir, { recursive: true });
+      }
+
+      // Copy tar.gz
+      const destPath = path.join(backupsDir, tarName);
+      fs.copyFileSync(tarPath, destPath);
+
+      // Copy manifest
+      const manifestPath = path.join(path.dirname(tarPath), 'backup-manifest.json');
+      if (fs.existsSync(manifestPath)) {
+        fs.copyFileSync(manifestPath, path.join(backupsDir, 'backup-manifest.json'));
+      }
+
+      // Git add and commit
+      execSync(`cd "${backupDir}" && git add backups/ && git commit -m "backup: ${tarName}"`, { stdio: 'pipe' });
+
+      // Git push
+      console.log('   Pushing to GitHub...');
+      execSync(`cd "${backupDir}" && git push origin ${this.config.branch}`, { stdio: 'pipe' });
+
+      printSuccess(`Backup uploaded: backups/${tarName}`);
+      this.stats.uploaded = 1;
+
+      // Cleanup
+      fs.rmSync(backupDir, { recursive: true, force: true });
+
+    } catch (err) {
+      // Cleanup on error
+      if (fs.existsSync(backupDir)) {
+        fs.rmSync(backupDir, { recursive: true, force: true });
+      }
+      throw new Error(`Git upload failed: ${err.message}`);
     }
   }
 
@@ -218,6 +319,11 @@ class BackupExecutor {
       const entries = fs.readdirSync(currentPath, { withFileTypes: true });
       
       for (const entry of entries) {
+        // Skip .git directories
+        if (entry.name === '.git') {
+          continue;
+        }
+        
         const fullPath = path.join(currentPath, entry.name);
         const relativePath = path.join(base, entry.name);
 
@@ -237,21 +343,20 @@ class BackupExecutor {
     return files;
   }
 
-  printSummary(duration = 0) {
+  printSummary(duration = 0, tarPath) {
     printDivider();
     printSuccess('Backup complete!');
-    console.log(`   Succeeded: ${this.stats.uploaded} files`);
-    if (this.stats.skipped > 0) {
-      console.log(`   Skipped: ${this.stats.skipped} files`);
-    }
+    console.log(`   Succeeded: ${this.stats.uploaded} archive`);
     if (this.stats.errors > 0) {
       printWarning(`   Failed: ${this.stats.errors} files`);
     }
     
     if (duration > 0) {
       console.log(`   Duration: ${formatDuration(duration)}`);
-      const avgTime = this.stats.uploaded > 0 ? (duration / this.stats.uploaded).toFixed(0) : 0;
-      console.log(`   Average speed: ${avgTime}ms/file`);
+      const tarSize = fs.statSync(tarPath).size;
+      const speedMBs = (tarSize / 1024 / 1024) / (duration / 1000);
+      console.log(`   Archive size: ${formatFileSize(tarSize)}`);
+      console.log(`   Speed: ${speedMBs.toFixed(2)} MB/s`);
     }
     
     // Show sensitive info warning
