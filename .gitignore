@@ -1,0 +1,17 @@
+# Git ignore for claw-migrate
+# No code, just docs - ignore temporary files
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.bak

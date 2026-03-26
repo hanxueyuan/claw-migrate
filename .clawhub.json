@@ -1,0 +1,18 @@
+{
+  "name": "claw-migrate",
+  "version": "1.0.0",
+  "description": "OpenClaw backup, restore & sharing - complete guide with sanitization",
+  "author": "hanxueyuan",
+  "license": "MIT",
+  "homepage": "https://github.com/hanxueyuan/claw-migrate",
+  "repository": "https://github.com/hanxueyuan/claw-migrate",
+  "type": "skill",
+  "tags": ["backup", "restore", "migration", "openclaw", "guide"],
+  "files": [
+    "SKILL.md",
+    "README.md",
+    "README_zh.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md"
+  ]
+}
